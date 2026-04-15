@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1e3a5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="妊産手帳">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzFlM2E1ZiIvPjx0ZXh0IHg9IjI1NiIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjI4MCIgZm9udC1mYW1pbHk9InNlcmlmIj7wn4y4PC90ZXh0Pjx0ZXh0IHg9IjI1NiIgeT0iNDgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZjJhN2I4IiBmb250LXNpemU9IjcwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9ImJvbGQiPuWHquebnjwvdGV4dD48L3N2Zz4=">
+<title>妊産手帳</title>
+<style>
+:root{
+  --pk:#e8748a;--pkl:#fde8ed;--pkd:#c02050;
+  --gn:#3d7a68;--gnl:#e4f2ee;
+  --gd:#b08030;--gdl:#fdf5e0;
+  --nv:#1e3a5f;--nvl:#e8edf5;
+  --cr:#faf7f3;
+  --tx:#1a1a1a;--sb:#666;
+  --bd:#e5ddd5;
+  --ok:#e8f3ee;--okb:#6db892;
+  --ug:#c02040;
+  --st:env(safe-area-inset-top,0px);
+  --sb2:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif;background:var(--cr);color:var(--tx);font-size:15px;line-height:1.6}
+#splash{position:fixed;inset:0;z-index:9999;background:var(--nv);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .5s}
+#splash.hide{opacity:0;pointer-events:none}
+.sp-icon{font-size:76px;animation:pulse 1.4s ease infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.sp-title{color:#fff;font-size:26px;font-weight:700;letter-spacing:.06em}
+.sp-sub{color:rgba(255,255,255,.55);font-size:13px}
+.sp-due{background:rgba(255,200,80,.2);border:1px solid rgba(255,200,80,.4);border-radius:10px;padding:5px 16px;color:#ffd97a;font-size:13px;font-weight:700}
+.sp-dots{display:flex;gap:6px;margin-top:4px}
+.sp-dots span{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.3);animation:dot 1.2s ease infinite}
+.sp-dots span:nth-child(2){animation-delay:.2s}.sp-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,80%,100%{opacity:.3}40%{opacity:1}}
+.safe-top{height:var(--st);background:var(--nv)}
+.app-header{background:var(--nv);padding:12px 16px 14px;position:sticky;top:0;z-index:200}
+.hd-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.hd-left{display:flex;align-items:center;gap:8px}
+.hd-icon{font-size:24px}
+.hd-title{color:#fff;font-size:18px;font-weight:700;letter-spacing:.04em}
+.hd-due{background:rgba(242,167,184,.2);border:1px solid rgba(242,167,184,.35);border-radius:20px;padding:3px 11px;color:#f9c8d5;font-size:12px;font-weight:600;white-space:nowrap}
+.hd-prog-lbl{display:flex;justify-content:space-between;color:rgba(255,255,255,.6);font-size:11.5px;margin-bottom:4px}
+.hd-prog-lbl strong{color:#7deba8}
+.hd-bar-bg{height:6px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden}
+.hd-bar-fill{height:100%;background:linear-gradient(90deg,#4ac48a,#7deba8);border-radius:99px;transition:width .45s cubic-bezier(.4,0,.2,1);width:0}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(58px + var(--sb2));padding-bottom:var(--sb2);background:#fff;border-top:1px solid var(--bd);display:flex;z-index:300;box-shadow:0 -3px 16px rgba(0,0,0,.08)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:8px;gap:2px;border:none;background:none;cursor:pointer;font-family:inherit;color:var(--sb);height:58px}
+.nav-btn.active{color:var(--nv)}
+.nav-btn.active .nav-ico{transform:scale(1.12)}
+.nav-ico{font-size:22px;transition:transform .2s}
+.nav-lbl{font-size:9.5px;font-weight:600;letter-spacing:.02em}
+main{max-width:600px;margin:0 auto;padding:14px 14px calc(72px + var(--sb2))}
+.page{display:none}.page.active{display:block}
+.sec-title{font-size:12px;font-weight:700;color:var(--sb);letter-spacing:.08em;text-transform:uppercase;margin:18px 0 8px}
+.notice-box{background:var(--gdl);border:1px solid #e0c070;border-left:4px solid var(--gd);border-radius:12px;padding:11px 14px;font-size:12.5px;color:#5a4010;margin-bottom:16px;line-height:1.65}
+.check-item{background:#fff;border:1px solid var(--bd);border-top:none;padding:12px 14px;display:flex;gap:11px;align-items:flex-start;cursor:pointer}
+.check-item:last-child{border-radius:0 0 14px 14px}
+.check-item.done{background:var(--ok)}
+.check-item.done .ci-title{text-decoration:line-through;color:#999}
+.check-item.urgent{border-left:4px solid var(--ug)}
+.ci-box{width:23px;height:23px;border:2px solid #ccc;border-radius:7px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;transition:all .18s;background:#fff}
+.check-item.done .ci-box{background:var(--gn);border-color:var(--gn);color:#fff}
+.ci-body{flex:1;min-width:0}
+.ci-title{font-size:14px;font-weight:700;color:var(--nv);margin-bottom:3px;display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.ci-meta{font-size:11.5px;color:var(--sb);margin-top:4px;display:flex;flex-wrap:wrap;gap:3px 12px}
+.ci-desc{font-size:12.5px;color:#444;margin-top:6px;line-height:1.65}
+.tag{display:inline-block;border-radius:5px;padding:1px 7px;font-size:10px;font-weight:700;white-space:nowrap}
+.tr{background:#fde8ec;color:#c02040;border:1px solid #f4a0b0}
+.tm{background:#e8f5e8;color:#2a7a2a;border:1px solid #90c490}
+.to{background:var(--nvl);color:var(--nv);border:1px solid #aac0e0}
+.deadline{display:inline-flex;align-items:center;gap:4px;background:#fde8ec;border:1px solid #f4a0b0;border-radius:7px;padding:3px 9px;font-size:11.5px;font-weight:700;color:var(--ug);margin-top:5px}
+.deadline.ok{background:var(--gdl);border-color:#e0c070;color:#7a5010}
+.amount{display:inline-block;background:var(--gdl);color:#7a5010;border:1px solid #e0c070;border-radius:7px;padding:2px 9px;font-size:12px;font-weight:700;margin-top:5px}
+.phase-hd{display:flex;align-items:center;gap:10px;padding:11px 14px;background:#fff;border:1px solid var(--bd);border-radius:14px 14px 0 0;cursor:pointer;user-select:none;margin-top:16px}
+.ph-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ph-info{flex:1}
+.ph-title{font-size:14px;font-weight:700;color:var(--nv)}
+.ph-meta{display:flex;align-items:center;gap:6px;margin-top:2px}
+.ph-date{font-size:11px;color:var(--sb)}
+.ph-count{font-size:11px;color:var(--gn);font-weight:700}
+.ph-chev{font-size:11px;color:var(--sb);transition:transform .25s;flex-shrink:0}
+.phase-hd.open .ph-chev{transform:rotate(180deg)}
+.phase-body{overflow:hidden;max-height:0;transition:max-height .35s cubic-bezier(.4,0,.2,1)}
+.phase-body.open{max-height:3000px}
+.ph1 .ph-icon{background:#fff0f5}.ph2 .ph-icon{background:#fffbee}
+.ph3 .ph-icon{background:#eef6f4}.ph4 .ph-icon{background:#edf1f8}
+.ph5 .ph-icon{background:#f5eeff}
+.tl-wrap{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:13px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tl-wrap h3{font-size:13px;font-weight:700;color:var(--nv);margin-bottom:10px}
+.tl-row{display:flex;min-width:520px}
+.tl-col{flex:1;border-left:2px solid var(--bd);padding:4px 8px}
+.tl-col:first-child{border-left:none}
+.tl-mo{font-size:11px;font-weight:700;color:var(--nv);margin-bottom:1px}
+.tl-wk{font-size:10px;color:var(--sb);margin-bottom:4px}
+.tl-ev{font-size:10px;font-weight:600;border-radius:4px;padding:2px 5px;margin-bottom:2px}
+.tp{background:var(--pkl);color:var(--pkd)}.tg{background:var(--gdl);color:#8a6010}
+.tn{background:var(--gnl);color:var(--gn)}.tb{background:var(--nvl);color:var(--nv)}
+.tu{background:#fde8ec;color:var(--ug);font-weight:800}
+.bcat-hd{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--nv);color:#fff;border-radius:12px 12px 0 0;cursor:pointer;user-select:none;margin-top:14px}
+.bcat-icon{font-size:20px}.bcat-title{flex:1;font-size:14px;font-weight:700}
+.bcat-count{font-size:11px;opacity:.7}.bcat-chev{font-size:11px;transition:transform .25s}
+.bcat-hd.open .bcat-chev{transform:rotate(180deg)}
+.bcat-body{overflow:hidden;max-height:0;transition:max-height .35s cubic-bezier(.4,0,.2,1)}
+.bcat-body.open{max-height:3000px}
+.baby-item{background:#fff;border:1px solid var(--bd);border-top:none;padding:11px 14px;display:flex;gap:11px;align-items:flex-start;cursor:pointer}
+.baby-item:last-child{border-radius:0 0 12px 12px}
+.baby-item.done{background:var(--ok)}
+.baby-item.done .bi-name{text-decoration:line-through;color:#999}
+.b-box{width:22px;height:22px;border:2px solid #ccc;border-radius:6px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;transition:all .18s;background:#fff}
+.baby-item.done .b-box{background:var(--gn);border-color:var(--gn);color:#fff}
+.bi-body{flex:1;min-width:0}
+.bi-name{font-size:14px;font-weight:700;color:var(--nv);display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-bottom:2px}
+.bi-qty{font-size:11.5px;color:var(--sb);margin-bottom:3px}
+.bi-tip{font-size:12px;color:#555;margin-top:4px;line-height:1.6;padding:6px 9px;background:#faf7f2;border-radius:7px;border-left:3px solid var(--pk)}
+.bi-tip.gd{border-left-color:var(--gn);background:var(--gnl)}.bi-tip.wn{border-left-color:var(--gd);background:var(--gdl)}
+.bt-must{background:#fde8ec;color:#c02040;border:1px solid #f4a0b0}
+.bt-good{background:#e8f5e8;color:#2a7a2a;border:1px solid #90c490}
+.bt-late{background:var(--nvl);color:var(--nv);border:1px solid #aac0e0}
+.bt-rent{background:#fff8e0;color:#8a6010;border:1px solid #e0c878}
+.bt-skip{background:#f0f0f0;color:#888;border:1px solid #ccc}
+.baby-prog-wrap{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:13px 15px;margin-bottom:14px}
+.bpw-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--sb);margin-bottom:5px}
+.bpw-lbl strong{color:var(--gn)}
+.bpw-bg{height:7px;background:#ede8e0;border-radius:99px;overflow:hidden}
+.bpw-fill{height:100%;background:linear-gradient(90deg,var(--pk),#f4a0b8);border-radius:99px;transition:width .4s;width:0}
+.baby-legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;padding:10px 12px;background:#fff;border:1px solid var(--bd);border-radius:12px}
+.bl-item{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--sb)}
+.baby-season{background:linear-gradient(135deg,#1e3a5f,#2e5589);color:#fff;border-radius:14px;padding:13px 15px;margin-bottom:14px}
+.baby-season h4{font-size:13px;font-weight:700;margin-bottom:6px}
+.baby-season p{font-size:12.5px;opacity:.85;line-height:1.65}
+.alb-hd-bar{background:linear-gradient(135deg,#1e3a5f,#3d6fa8);border-radius:14px;padding:15px;margin-bottom:13px;color:#fff}
+.alb-hd-bar h3{font-size:15px;font-weight:700;margin-bottom:4px}
+.alb-hd-bar p{font-size:12px;opacity:.8;line-height:1.6}
+.alb-week-now{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.18);border-radius:8px;padding:5px 11px;font-size:13px;font-weight:700;margin-top:7px}
+.alb-type-tabs{display:flex;gap:8px;margin-bottom:13px}
+.att{flex:1;padding:9px;border:2px solid var(--bd);border-radius:10px;background:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--sb);text-align:center}
+.att.active{border-color:var(--nv);background:var(--nvl);color:var(--nv)}
+.alb-add-btn{width:100%;padding:14px;border:2px dashed var(--pk);border-radius:14px;background:var(--pkl);color:var(--pkd);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+.alb-add-btn:active{background:#f9d0da}
+.week-info-card{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:13px;margin-bottom:13px}
+.wi-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.wi-title{font-size:13px;font-weight:700;color:var(--nv)}
+.wi-badge{background:var(--nv);color:#fff;border-radius:8px;padding:3px 10px;font-size:12px;font-weight:700}
+.wi-list{display:flex;flex-direction:column}
+.wi-item{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:#444;padding:5px 0;border-bottom:1px solid #f0ece8;line-height:1.55}
+.wi-item:last-child{border-bottom:none}
+.wi-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.album-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.album-card{border-radius:14px;overflow:hidden;border:1px solid var(--bd);background:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.06);position:relative}
+.album-card:active{opacity:.85}
+.alb-img{width:100%;aspect-ratio:1/1;background:#f0ece8;display:flex;align-items:center;justify-content:center;font-size:38px;position:relative;overflow:hidden}
+.alb-img img,.alb-img video{width:100%;height:100%;object-fit:cover}
+.alb-week-badge{position:absolute;bottom:6px;left:6px;background:rgba(30,58,95,.85);color:#fff;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700}
+.alb-type-badge{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.65);color:#fff;border-radius:5px;padding:1px 6px;font-size:10px;font-weight:700}
+.alb-card-body{padding:8px 10px 10px}
+.alb-card-date{font-size:10.5px;color:var(--sb);margin-bottom:2px}
+.alb-card-title{font-size:13px;font-weight:700;color:var(--nv);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.alb-card-memo{font-size:11px;color:#666;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.alb-del-btn{position:absolute;top:6px;left:6px;background:rgba(192,32,64,.85);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;font-weight:700}
+.album-empty{text-align:center;padding:36px 20px;color:var(--sb)}
+.album-empty .ei{font-size:56px;margin-bottom:12px}
+.album-empty p{font-size:14px;line-height:1.8}
+.modal-ov{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.6);align-items:flex-end;justify-content:center}
+.modal-ov.open{display:flex}
+.modal-sheet{background:#fff;border-radius:22px 22px 0 0;padding:20px 18px calc(24px + var(--sb2));width:100%;max-width:600px;max-height:92vh;overflow-y:auto}
+.modal-sheet h3{font-size:16px;font-weight:700;color:var(--nv);margin-bottom:14px}
+.m-label{font-size:12.5px;font-weight:700;color:var(--sb);margin-bottom:5px;display:block}
+.m-input,.m-select,.m-ta{width:100%;border:1px solid var(--bd);border-radius:10px;padding:11px 13px;font-size:15px;font-family:inherit;margin-bottom:12px;background:#fff;color:var(--tx);-webkit-appearance:none;box-sizing:border-box}
+.m-ta{min-height:76px;resize:none}
+.m-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.m-type-btns{display:flex;gap:8px;margin-bottom:12px}
+.m-type-btn{flex:1;padding:10px;border:2px solid var(--bd);border-radius:10px;background:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--sb);transition:all .2s;text-align:center}
+.m-type-btn.active{border-color:var(--nv);background:var(--nvl);color:var(--nv)}
+.m-media-area{width:100%;aspect-ratio:4/3;border-radius:12px;border:2px dashed var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:12px;overflow:hidden;background:#faf7f3;position:relative}
+.m-media-area img,.m-media-area video{width:100%;height:100%;object-fit:cover}
+.m-media-ph{display:flex;flex-direction:column;align-items:center;gap:5px}
+.m-media-ph span{font-size:38px}
+.m-media-ph p{font-size:12px;color:var(--sb)}
+.m-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.m-cancel{padding:13px;border:1px solid var(--bd);border-radius:12px;background:#fff;color:var(--sb);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.m-save{padding:13px;border:none;border-radius:12px;background:var(--nv);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.detail-ov{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);align-items:flex-end;justify-content:center}
+.detail-ov.open{display:flex}
+.detail-sheet{background:#fff;border-radius:22px 22px 0 0;padding:20px 18px calc(30px + var(--sb2));width:100%;max-width:600px;max-height:93vh;overflow-y:auto}
+.det-media{width:100%;border-radius:14px;margin-bottom:13px;background:#f0ece8;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:60px;overflow:hidden}
+.det-media img,.det-media video{width:100%;border-radius:14px;max-height:60vw;object-fit:cover}
+.det-week{font-size:24px;font-weight:800;color:var(--nv)}
+.det-date{font-size:13px;color:var(--sb);margin-top:2px;margin-bottom:10px}
+.det-sizes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.det-badge{background:var(--pkl);color:var(--pkd);border:1px solid #f4a0b0;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700}
+.det-memo{font-size:14px;color:#333;line-height:1.7;background:#faf7f3;border-radius:10px;padding:12px;margin-bottom:13px}
+.det-btns{display:flex;gap:10px}
+.det-close{flex:1;padding:13px;border:1px solid var(--bd);border-radius:12px;background:#fff;color:var(--sb);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.det-del{flex:1;padding:13px;border:1px solid var(--ug);border-radius:12px;background:#fff;color:var(--ug);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.mg-intro{background:linear-gradient(135deg,#1e3a5f,#3d6fa8);border-radius:14px;padding:14px;margin-bottom:13px;color:#fff}
+.mg-intro h3{font-size:15px;font-weight:700;margin-bottom:4px}
+.mg-intro p{font-size:12px;opacity:.82;line-height:1.6}
+.mg-cur-week{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.18);border-radius:8px;padding:5px 11px;font-size:13px;font-weight:700;margin-top:7px}
+.mg-search{width:100%;border:1.5px solid var(--bd);border-radius:14px;padding:12px 16px;font-size:15px;font-family:inherit;background:#fff;color:var(--tx);-webkit-appearance:none;box-sizing:border-box;margin-bottom:12px}
+.mg-search:focus{outline:none;border-color:var(--nv)}
+.mg-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mg-chips::-webkit-scrollbar{display:none}
+.mg-chip{flex-shrink:0;padding:6px 13px;border-radius:99px;border:1.5px solid var(--bd);background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--sb);white-space:nowrap}
+.mg-chip.active{background:var(--nv);border-color:var(--nv);color:#fff}
+.mg-card{background:#fff;border:1px solid var(--bd);border-radius:16px;margin-bottom:11px;overflow:hidden}
+.mg-card-hd{padding:13px 15px;cursor:pointer;user-select:none;display:flex;align-items:flex-start;gap:10px}
+.mg-wk-badge{background:var(--nv);color:#fff;border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px}
+.mg-card-info{flex:1}
+.mg-card-title{font-size:14px;font-weight:700;color:var(--nv);margin-bottom:3px}
+.mg-card-prev{font-size:12px;color:var(--sb);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mg-chev{font-size:12px;color:var(--sb);transition:transform .25s;flex-shrink:0;margin-top:4px}
+.mg-card.open .mg-chev{transform:rotate(180deg)}
+.mg-body{overflow:hidden;max-height:0;transition:max-height .4s cubic-bezier(.4,0,.2,1)}
+.mg-card.open .mg-body{max-height:2000px}
+.mg-body-inner{padding:0 15px 15px}
+.mg-symp{margin-bottom:14px}
+.mg-symp-title{font-size:13px;font-weight:700;color:var(--nv);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.mg-symp-badge{font-size:10px;font-weight:700;background:var(--pkl);color:var(--pkd);border-radius:5px;padding:1px 7px;border:1px solid #f4a0b0}
+.mg-voices{display:flex;flex-direction:column;gap:7px;margin-bottom:9px}
+.mg-voice{background:#faf7f2;border-radius:10px;padding:10px 12px 10px 30px;font-size:12.5px;color:#333;line-height:1.65;position:relative}
+.mg-voice::before{content:"💬";position:absolute;left:8px;top:9px;font-size:14px}
+.mg-tips-box{background:var(--gnl);border-radius:10px;padding:10px 12px}
+.mg-tips-title{font-size:12px;font-weight:700;color:var(--gn);margin-bottom:6px}
+.mg-tip{font-size:12px;color:#333;padding:3px 0 3px 14px;position:relative;line-height:1.55}
+.mg-tip::before{content:"✓";position:absolute;left:0;color:var(--gn);font-weight:700}
+.mg-divider{height:1px;background:var(--bd);margin:11px 0}
+.mg-empty{text-align:center;padding:30px 20px;color:var(--sb);font-size:14px}
+.inst-card{background:var(--nv);color:#fff;border-radius:16px;padding:16px;margin-bottom:12px}
+.inst-card h3{font-size:15px;font-weight:700;margin-bottom:12px}
+.inst-step{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.inst-num{width:25px;height:25px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.inst-step p{font-size:13px;color:rgba(255,255,255,.85);line-height:1.55}
+.inst-step strong{color:#fff}
+.dl-wrap{background:linear-gradient(135deg,#2d6a4f,#40916c);border-radius:16px;padding:16px;margin-bottom:12px}
+.dl-wrap h3{color:#fff;font-size:15px;font-weight:700;margin-bottom:10px}
+.dl-btn{width:100%;padding:15px;border:none;border-radius:14px;background:#fff;color:#2d6a4f;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,.15)}
+.info-card{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:10px}
+.info-card h4{font-size:13px;font-weight:700;color:var(--nv);margin-bottom:8px}
+.info-card ul{list-style:none}
+.info-card li{font-size:12.5px;color:#444;padding:3px 0 3px 14px;position:relative;border-bottom:1px solid #f0ece8}
+.info-card li:last-child{border-bottom:none}
+.info-card li::before{content:"・";position:absolute;left:0;color:var(--pk)}
+.reset-btn{display:block;width:100%;background:none;border:1px solid var(--bd);border-radius:12px;padding:12px;font-size:13px;color:var(--sb);cursor:pointer;font-family:inherit;margin-top:14px}
+.reset-btn:active{background:#f0ece8}
+.shop-global-bar{background:var(--nv);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sgb-label{color:rgba(255,255,255,.8);font-size:12px;flex:1;min-width:120px}
+.sgb-btns{display:flex;gap:6px}
+.sgb-btn{padding:6px 11px;border-radius:8px;border:2px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.65);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
+.sgb-btn.sel-r{border-color:#ff8888;background:#BF0000;color:#fff}
+.sgb-btn.sel-a{border-color:#FFB347;background:#FF9900;color:#111}
+.sgb-btn.sel-y{border-color:#ff809a;background:#FF0033;color:#fff}
+.baby-detail{display:none;border-top:1px solid #f0ece8;background:#f9f5f1;padding:12px 14px}
+.baby-detail.open{display:block}
+.bd-tip{font-size:12px;color:#444;line-height:1.6;padding:8px 10px;background:#fff;border-radius:8px;border-left:3px solid var(--pk);margin-bottom:10px}
+.bd-tip.gd{border-left-color:var(--gn);background:var(--gnl)}
+.bd-tip.wn{border-left-color:var(--gd);background:var(--gdl)}
+.per-site-row{display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.psr-label{font-size:11px;color:var(--sb);font-weight:700;flex-shrink:0}
+.psr-btn{padding:4px 9px;border-radius:6px;border:1.5px solid var(--bd);background:#fff;font-size:10.5px;font-weight:700;cursor:pointer;color:var(--sb);font-family:inherit;transition:all .2s}
+.psr-btn.sel-r{border-color:#BF0000;background:#fff0f0;color:#BF0000}
+.psr-btn.sel-a{border-color:#FF9900;background:#fff8e0;color:#b36b00}
+.psr-btn.sel-y{border-color:#FF0033;background:#fff0f2;color:#FF0033}
+.psr-btn.sel-all{border-color:var(--nv);background:var(--nvl);color:var(--nv)}
+.shop-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.shop-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:12px;text-decoration:none;cursor:pointer;transition:opacity .15s;border:none;font-family:inherit}
+.shop-btn:active{opacity:.75}
+.sb-ico{font-size:20px}.sb-nm{font-size:10.5px;font-weight:700}.sb-sub{font-size:9px;opacity:.82}
+.sb-r{background:#BF0000;color:#fff}.sb-a{background:#FF9900;color:#111}.sb-y{background:#FF0033;color:#fff}
+.bd-toggle-btn{font-size:11px;color:var(--nv);font-weight:700;margin-top:4px;display:inline-flex;align-items:center;gap:3px;cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
+.share-status-bar{border-radius:12px;padding:11px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.share-status-bar.disconnected{background:#f5f0eb;border:1px solid var(--bd)}
+.share-status-bar.connecting{background:#fdf5e0;border:1px solid #e0c070}
+.share-status-bar.connected{background:var(--gnl);border:1px solid var(--okb)}
+.ssb-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.disconnected .ssb-dot{background:#ccc}
+.connecting .ssb-dot{background:#FF9900;animation:pulse2 1s infinite}
+.connected .ssb-dot{background:var(--gn)}
+@keyframes pulse2{0%,100%{opacity:1}50%{opacity:.4}}
+.ssb-text{flex:1;font-size:13px;font-weight:700}
+.disconnected .ssb-text{color:var(--sb)}
+.connecting .ssb-text{color:#7a5010}
+.connected .ssb-text{color:var(--gn)}
+.ssb-sub{font-size:11px;color:var(--sb);margin-top:1px}
+.share-section{background:#fff;border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:12px}
+.share-section-hd{padding:13px 15px;cursor:pointer;user-select:none;display:flex;align-items:center;gap:10px}
+.ss-hd-icon{font-size:22px;flex-shrink:0}
+.ss-hd-info{flex:1}
+.ss-hd-title{font-size:14px;font-weight:700;color:var(--nv)}
+.ss-hd-sub{font-size:12px;color:var(--sb);margin-top:2px}
+.ss-chev{font-size:12px;color:var(--sb);transition:transform .25s}
+.share-section.open .ss-chev{transform:rotate(180deg)}
+.share-body{overflow:hidden;max-height:0;transition:max-height .35s cubic-bezier(.4,0,.2,1)}
+.share-section.open .share-body{max-height:1000px}
+.share-body-inner{padding:0 15px 16px}
+.step-card{background:#f9f5f1;border-radius:10px;padding:12px;margin-bottom:10px}
+.step-num-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--nv);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-title{font-size:13px;font-weight:700;color:var(--nv)}
+.step-body{font-size:12.5px;color:#444;line-height:1.65}
+.step-link{display:inline-flex;align-items:center;gap:5px;background:var(--nv);color:#fff;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;text-decoration:none;margin-top:8px;cursor:pointer}
+.m-input-share{width:100%;border:1.5px solid var(--bd);border-radius:10px;padding:11px 13px;font-size:15px;font-family:inherit;margin-bottom:10px;background:#fff;color:var(--tx);box-sizing:border-box;letter-spacing:.08em}
+.m-input-share:focus{outline:none;border-color:var(--nv)}
+.share-connect-btn{width:100%;padding:14px;border:none;border-radius:12px;background:var(--nv);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+.share-connect-btn:active{opacity:.85}
+.share-disconnect-btn{width:100%;padding:11px;border:1px solid var(--ug);border-radius:12px;background:#fff;color:var(--ug);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}
+.photo-share-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-top:1px solid #f0ece8;margin-top:8px}
+.psr-info{font-size:13px;font-weight:700;color:var(--nv)}
+.psr-info-sub{font-size:11.5px;color:var(--sb);margin-top:2px}
+.toggle-wrap{position:relative;width:50px;height:28px;flex-shrink:0}
+.toggle-wrap input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:#ccc;border-radius:99px;cursor:pointer;transition:.3s}
+.toggle-slider::before{content:'';position:absolute;width:22px;height:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle-wrap input:checked+.toggle-slider{background:var(--gn)}
+.toggle-wrap input:checked+.toggle-slider::before{transform:translateX(22px)}
+.sync-badge{display:inline-flex;align-items:center;gap:4px;background:var(--gnl);border:1px solid var(--okb);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;color:var(--gn)}
+.con-card{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:13px 15px;margin-bottom:9px;display:flex;align-items:center;gap:11px}
+.con-icon{font-size:26px;flex-shrink:0}
+.con-info{flex:1}
+.con-name{font-size:13px;font-weight:700;color:var(--nv)}
+.con-addr{font-size:11.5px;color:var(--sb);margin-top:1px}
+.con-tel{font-size:12px;color:var(--gn);font-weight:600;margin-top:2px}
+.call-btn{background:var(--gn);color:#fff;border:none;border-radius:10px;padding:8px 13px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="sp-icon">🌸</div>
+  <div class="sp-title">妊産手帳</div>
+  <div class="sp-sub">仙台市 妊娠・出産サポートアプリ</div>
+  <div class="sp-due">🍼 出産予定日：令和8年9月16日</div>
+  <div class="sp-dots"><span></span><span></span><span></span></div>
+</div>
+
+<div class="safe-top"></div>
+
+<header class="app-header">
+  <div class="hd-top">
+    <div class="hd-left">
+      <span class="hd-icon">🌸</span>
+      <span class="hd-title">妊産手帳</span>
+    </div>
+    <div class="hd-due">🍼 R8.9.16 出産予定</div>
+  </div>
+  <div>
+    <div class="hd-prog-lbl"><span>手続き進捗</span><strong id="prog-text">0 / 0 項目</strong></div>
+    <div class="hd-bar-bg"><div class="hd-bar-fill" id="prog-bar"></div></div>
+  </div>
+</header>
+
+<main>
+
+<div id="page-check" class="page active">
+  <div class="notice-box">
+    <strong>⚠ ご注意：</strong>日付はR8.9.16出産を逆算した目安です。最新情報は各窓口または仙台市総合コールセンター（022-398-4894）でご確認ください。<br>
+    タップで完了チェック。<span style="color:var(--ug);font-weight:700">赤枠</span>は期限厳守です。
+  </div>
+  <div class="tl-wrap">
+    <h3>📅 スケジュール早見表</h3>
+    <div class="tl-row">
+      <div class="tl-col"><div class="tl-mo">〜R8.2月</div><div class="tl-wk">〜妊娠8週</div><div class="tl-ev tp">産婦人科受診</div><div class="tl-ev tp">妊娠届・母子手帳</div><div class="tl-ev tp">給付金①申請</div></div>
+      <div class="tl-col"><div class="tl-mo">R8.3〜5月</div><div class="tl-wk">5〜7ヶ月</div><div class="tl-ev tg">定期健診(4週毎)</div><div class="tl-ev tg">歯科健診</div><div class="tl-ev tg">両親学級</div></div>
+      <div class="tl-col"><div class="tl-mo">R8.6〜7月</div><div class="tl-wk">8〜9ヶ月</div><div class="tl-ev tn">8ヶ月アンケート</div><div class="tl-ev tn">分娩予約完了</div><div class="tl-ev tn">一時金確認</div></div>
+      <div class="tl-col"><div class="tl-mo">R8.8月〜</div><div class="tl-wk">産前6週〜</div><div class="tl-ev tb">産前休業 8/5〜</div><div class="tl-ev tb">入院準備完了</div><div class="tl-ev tb">健診（毎週）</div></div>
+      <div class="tl-col"><div class="tl-mo">9/16 出産〜</div><div class="tl-wk">産後</div><div class="tl-ev tu">出生届〜9/30</div><div class="tl-ev tu">児童手当 9月中</div><div class="tl-ev tu">保険加入 すぐ</div></div>
+    </div>
+  </div>
+  <div class="phase-hd open ph1" onclick="togglePhase(this)"><div class="ph-icon">🌸</div><div class="ph-info"><div class="ph-title">PHASE 1｜妊娠初期</div><div class="ph-meta"><span class="ph-date">📆 〜令和8年2月中旬</span><span class="ph-count" id="ph1c"></span></div></div><span class="ph-chev">▼</span></div>
+  <div class="phase-body open">
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">産婦人科の受診・妊娠確認 <span class="tag tr">必須</span></div><div class="ci-meta"><span>📅 妊娠の疑いがあればすぐ</span><span>📍 近くの産婦人科</span></div><div class="ci-desc">胎児心拍の確認後、「妊娠届」用紙を医療機関からもらう。この確認が各種申請の前提条件。</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">妊娠届の提出・母子健康手帳の交付 <span class="tag tr">必須</span></div><div class="ci-meta"><span>📅 令和8年2月中旬ごろまでに（事前予約制）</span><span>📍 お住まいの区の区役所 家庭健康課</span></div><div class="ci-desc">令和7年度より事前予約制（オンラインor電話）。母子健康手帳・妊婦健診助成券（16回分）・妊婦歯科健診券等を受け取る。<br><strong>持ち物：</strong>妊娠届、マイナンバーカード、身分証</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">妊婦支援給付金（第1回）の申請 <span class="tag tm">給付金</span></div><div class="ci-meta"><span>📅 令和8年2〜3月ごろ（面談後）</span><span>📍 区役所窓口 or せんだいオンライン申請</span></div><div class="ci-desc">令和7年4月以降妊娠の方が対象（旧出産応援給付金から変更）。妊娠届時の面談後に申請案内あり。</div><div class="amount">💴 金額は面談時に確認</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">勤務先への妊娠報告・産休の相談 <span class="tag to">推奨</span></div><div class="ci-meta"><span>📅 令和8年2〜3月ごろ</span><span>📍 勤務先の上司・人事部門</span></div><div class="ci-desc">産前休業開始：<strong>R8.8.5（水）</strong>（産前42日）｜産後休業終了：<strong>R8.11.10（火）</strong>（産後56日）。育児休業の希望も早めに相談。</div></div></div>
+  </div>
+  <div class="phase-hd open ph2" onclick="togglePhase(this)"><div class="ph-icon">🌿</div><div class="ph-info"><div class="ph-title">PHASE 2｜妊娠中期（5〜7ヶ月）</div><div class="ph-meta"><span class="ph-date">📆 令和8年3月〜5月</span><span class="ph-count" id="ph2c"></span></div></div><span class="ph-chev">▼</span></div>
+  <div class="phase-body open">
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">妊婦一般健康診査（定期健診） <span class="tag tr">継続</span></div><div class="ci-meta"><span>📅 妊娠初期〜出産まで（16回分助成）</span><span>📍 登録医療機関</span></div><div class="ci-desc"><strong>〜R8.6月初（27週）：</strong>4週に1回　<strong>R8.6月中〜8月初（28〜35週）：</strong>2週に1回　<strong>R8.8月〜（36週〜）：</strong>毎週</div><div class="amount">💴 助成券で費用の大部分を補助</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">妊婦歯科健康診査 <span class="tag tm">無料</span></div><div class="ci-meta"><span>📅 令和8年3〜5月ごろ（安定期のうちに）</span><span>📍 登録歯科医療機関（電話で予約）</span></div><div class="ci-desc">母子健康手帳交付時に受け取った妊婦歯科健診券を使用。1回分無料。後期になるほど受診しにくいので安定期に。</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">両親学級・母親学級への参加 <span class="tag to">推奨</span></div><div class="ci-meta"><span>📅 令和8年4〜7月ごろ</span><span>📍 お住まいの区の区役所・保健センター（無料）</span></div><div class="ci-desc">沐浴体験・グループワーク・地域の妊婦さんとの交流あり。日程は各区役所に要確認。後期になると参加しにくいので早めに。</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">保育園・保育施設の情報収集 <span class="tag to">推奨</span></div><div class="ci-meta"><span>📅 令和8年春ごろから開始</span><span>📍 せんだいのびすくナビ・保育サービスナビ</span></div><div class="ci-desc">R9年4月入所申込は<strong>令和8年10〜11月ごろ</strong>（区役所に要確認）。産後の慌ただしい時期に申込が重なるため、施設見学は妊娠中に。</div></div></div>
+  </div>
+  <div class="phase-hd open ph3" onclick="togglePhase(this)"><div class="ph-icon">🏥</div><div class="ph-info"><div class="ph-title">PHASE 3｜妊娠後期（8〜10ヶ月）</div><div class="ph-meta"><span class="ph-date">📆 令和8年6月〜9月15日</span><span class="ph-count" id="ph3c"></span></div></div><span class="ph-chev">▼</span></div>
+  <div class="phase-body open">
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">妊娠8ヶ月アンケート（伴走型相談支援） <span class="tag to">推奨</span></div><div class="ci-meta"><span>📅 <strong>令和8年7〜8月ごろ</strong>（32週前後）に案内</span><span>📍 オンライン回答可</span></div><div class="ci-desc">妊婦支援給付金（第2回）申請にもつながるため必ず回答を。</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">分娩予約・入院手続きの最終確認 <span class="tag tr">必須</span></div><div class="ci-meta"><span>📅 <strong>令和8年6〜7月中（28〜32週）まで</strong>に完了</span><span>📍 出産予定の産院・病院</span></div><div class="ci-desc">出産育児一時金「直接支払制度」の同意書、入院案内、立ち会い分娩希望等を産院で確認。</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">出産育児一時金の手続き確認 <span class="tag tm">給付金</span></div><div class="ci-meta"><span>📅 令和8年6〜7月中に加入先へ確認</span><span>📍 勤務先の健康保険組合 or 区役所（国保）</span></div><div class="ci-desc">出産1件につき50万円支給。直接支払制度で入院費用から自動差引。</div><div class="amount">💴 50万円／人（直接支払制度あり）</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">出産手当金の申請書類を準備（働く方） <span class="tag tm">給付金</span></div><div class="ci-meta"><span>📅 産前休業開始（<strong>R8.8.5〜</strong>）後に勤務先へ提出</span><span>📍 勤務先の健康保険組合</span></div><div class="ci-desc">産前：<strong>R8.8.5〜9.15</strong>　産後：<strong>R8.9.16〜11.10</strong></div><div class="amount">💴 標準報酬日額の2/3 × 休業日数</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">育児休業の申出（働く方） <span class="tag to">対象者</span></div><div class="ci-meta"><span>📅 育休希望日の<strong>1ヶ月前まで</strong>に申出</span><span>📍 勤務先</span></div><div class="ci-desc">令和7年4月より「出生後休業支援給付金」が創設。両親ともに14日以上育休取得で最大28日間追加給付あり。</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">入院バッグ・新生児用品の準備完了 <span class="tag to">準備</span></div><div class="ci-meta"><span>📅 <strong>令和8年8月中旬（34〜36週）まで</strong>に完了</span></div><div class="ci-desc">35週には準備完了が目安（早産に備えて）。チャイルドシートは退院時に必要。</div></div></div>
+  </div>
+  <div class="phase-hd open ph4" onclick="togglePhase(this)"><div class="ph-icon">👶</div><div class="ph-info"><div class="ph-title">PHASE 4｜出産直後〜生後1ヶ月</div><div class="ph-meta"><span class="ph-date">📆 R8.9.16〜10月中旬</span><span class="ph-count" id="ph4c"></span></div></div><span class="ph-chev">▼</span></div>
+  <div class="phase-body open">
+    <div class="check-item urgent" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">出生届の提出 <span class="tag tr">期限厳守</span></div><div class="deadline">⏰ 令和8年9月30日（火）まで（14日以内）</div><div class="ci-meta" style="margin-top:5px"><span>📍 区役所 区民課（夜間窓口あり）</span></div><div class="ci-desc"><strong>持ち物：</strong>出生証明書（産院作成）、母子健康手帳、印鑑（認印可）</div></div></div>
+    <div class="check-item urgent" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">児童手当の申請 <span class="tag tm">給付金</span> <span class="tag tr">期限厳守</span></div><div class="deadline">⏰ 令和8年9月30日（火）まで（出生月内・遡及不可）</div><div class="ci-meta" style="margin-top:5px"><span>📍 区役所 区民課 / オンライン申請可</span></div><div class="ci-desc">出生届と同日に申請するのがベスト。持ち物：健康保険証、振込先口座情報、マイナンバー</div><div class="amount">💴 3歳未満：15,000円/月</div></div></div>
+    <div class="check-item urgent" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">赤ちゃんの健康保険加入 <span class="tag tr">必須</span></div><div class="deadline">⏰ 1ヶ月健診（R8.10.16ごろ）までに</div><div class="ci-meta" style="margin-top:5px"><span>📍 勤務先（社保）or 区役所（国保）</span></div><div class="ci-desc">国保の方は出生届と同日に手続き可能。</div></div></div>
+    <div class="check-item urgent" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">乳幼児医療費助成の申請 <span class="tag tm">助成</span></div><div class="deadline">⏰ 健康保険証取得後すぐ</div><div class="ci-meta" style="margin-top:5px"><span>📍 区役所 区民課</span></div><div class="ci-desc">仙台市では中学校卒業まで（所得制限あり）医療費を助成。</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">出生連絡票の投函（新生児訪問へ） <span class="tag tr">必須</span></div><div class="ci-meta"><span>📅 退院後すぐ（令和8年9月下旬）に投函</span><span>📍 ポスト投函（母子健康手帳別冊に添付）</span></div><div class="ci-desc">投函後、助産師・保健師が新生児訪問（生後28日ごろ＝<strong>R8.10.14ごろ</strong>）。</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">産後健康診査（お母さんの健診） <span class="tag tm">助成</span></div><div class="ci-meta"><span>📅 産後2週（<strong>R8.9.30ごろ</strong>）・1ヶ月（<strong>R8.10.16ごろ</strong>）</span><span>📍 出産した産院・かかりつけ医</span></div><div class="ci-desc">産後のお母さんの体調確認（産後うつチェックも）。産後健康診査助成券を使用。</div><div class="amount">💴 上限5,000円 × 2回</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">妊婦支援給付金（第2回）の申請 <span class="tag tm">給付金</span></div><div class="ci-meta"><span>📅 令和8年10〜11月ごろ（新生児訪問後に案内）</span><span>📍 区役所窓口 or せんだいオンライン申請</span></div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">杜っ子のびすくプレゼントの申込 <span class="tag tm">プレゼント</span></div><div class="ci-meta"><span>📅 <strong>令和8年11〜12月ごろ</strong>に案内状が届く</span><span>📍 特設サイトからオンライン申込</span></div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">育児休業給付金の申請（働く方） <span class="tag tm">給付金</span></div><div class="ci-meta"><span>📅 育休開始後（<strong>R8.11.10ごろ〜</strong>）2ヶ月ごとに申請</span><span>📍 勤務先（ハローワーク経由）</span></div><div class="amount">💴 休業前賃金の67〜80%相当（条件による）</div></div></div>
+  </div>
+  <div class="phase-hd open ph5" onclick="togglePhase(this)"><div class="ph-icon">🌱</div><div class="ph-info"><div class="ph-title">PHASE 5｜生後1ヶ月以降</div><div class="ph-meta"><span class="ph-date">📆 令和8年10月以降〜</span><span class="ph-count" id="ph5c"></span></div></div><span class="ph-chev">▼</span></div>
+  <div class="phase-body open">
+    <div class="check-item urgent" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">赤ちゃんの定期予防接種 <span class="tag tr">必須</span></div><div class="deadline ok">📋 開始：令和8年11月16日ごろ（生後2ヶ月〜）</div><div class="ci-meta" style="margin-top:5px"><span>📍 かかりつけの小児科</span></div><div class="ci-desc"><strong>ロタウイルスは接種期限が特に早い</strong>ので生後2ヶ月になったらすぐ予約を。</div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">乳幼児健康診査 <span class="tag tr">必須</span></div><div class="ci-meta"><span>📅 2ヶ月：R8.11月ごろ　4ヶ月：R9.1月ごろ</span><span>📍 区役所保健センター or 委託医療機関</span></div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">保育園の申込（育休復帰予定の方） <span class="tag to">対象者</span></div><div class="ci-meta"><span>📅 R9年4月入所希望：<strong>令和8年10〜11月ごろ</strong></span><span>📍 区役所 保育給付課 or 各施設</span></div></div></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-body"><div class="ci-title">産後ケア・すくすくサポートの活用 <span class="tag to">推奨</span></div><div class="ci-meta"><span>📅 産後〜乳幼児期</span><span>📍 区役所 家庭健康課 / のびすく施設</span></div><div class="ci-desc">産後の相談窓口、一時預かり、育児支援ヘルパー派遣等。</div></div></div>
+  </div>
+  <button class="reset-btn" onclick="resetChecks()">🔄 手続きチェックをリセット</button>
+</div>
+
+<div id="page-baby" class="page">
+  <div class="baby-season"><h4>🍂 R8.9月生まれ（秋生まれ）の準備ポイント</h4><p>退院時は残暑、1ヶ月健診から秋、その後は冬へ。スリーパー・おしりふきウォーマーは秋以降に特に大活躍します。</p></div>
+  <div class="baby-prog-wrap"><div class="bpw-lbl"><span>👶 準備完了した用品</span><strong id="baby-prog-text">0 / 0 点</strong></div><div class="bpw-bg"><div class="bpw-fill" id="baby-prog-bar"></div></div></div>
+  <div class="baby-legend">
+    <div class="bl-item"><span class="tag bt-must">必須</span>退院前に準備</div>
+    <div class="bl-item"><span class="tag bt-good">買って正解</span>口コミ◎</div>
+    <div class="bl-item"><span class="tag bt-late">産後でOK</span>様子を見て</div>
+    <div class="bl-item"><span class="tag bt-rent">レンタル推奨</span>期間短い</div>
+    <div class="bl-item"><span class="tag bt-skip">不要な場合も</span>賛否あり</div>
+  </div>
+  <div class="shop-global-bar">
+    <span class="sgb-label">🛒 購入サイトのデフォルト</span>
+    <div class="sgb-btns">
+      <button class="sgb-btn sel-r" id="sg-r" onclick="setGlobalShop('r')">🛒 楽天</button>
+      <button class="sgb-btn" id="sg-a" onclick="setGlobalShop('a')">📦 Amazon</button>
+      <button class="sgb-btn" id="sg-y" onclick="setGlobalShop('y')">🔶 Yahoo!</button>
+    </div>
+  </div>
+
+  <div class="bcat-hd open" onclick="toggleBcat(this)"><span class="bcat-icon">🛏</span><span class="bcat-title">寝具・ねんねグッズ</span><span class="bcat-count" id="bc0c"></span><span class="bcat-chev">▼</span></div>
+  <div class="bcat-body open" id="bc0">
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">ベビー布団セット <span class="tag bt-rent">レンタル推奨</span></div><div class="bi-qty">1セット（敷き布団・掛け布団・カバー）</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd0')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd0"><div class="bd-tip">使用期間は1〜2年と短いためレンタルがコスパ◎。マットレスは適度な硬さを選ぶこと（柔らかすぎると窒息リスクあり）。枕は新生児には不要。</div><div id="rental-bd0"></div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd0','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd0','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd0','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd0','all')">すべて</button></div><div class="shop-grid" id="sg-bd0"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">ベビーベッド <span class="tag bt-rent">レンタル推奨</span></div><div class="bi-qty">1台</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd1')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd1"><div class="bd-tip wn">ペットがいる・ベッド寝の家庭は必須級。添い寝派・部屋が狭い家庭は不要なことも。使用期間が数ヶ月のケースもあるためレンタルがおすすめ。</div><div id="rental-bd1"></div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd1','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd1','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd1','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd1','all')">すべて</button></div><div class="shop-grid" id="sg-bd1"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">防水シーツ <span class="tag bt-must">必須</span></div><div class="bi-qty">2枚（洗い替え用）</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd2')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd2"><div class="bd-tip">おしっこ・吐き戻し漏れから布団を守る。洗い替え用に2枚あると安心。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd2','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd2','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd2','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd2','all')">すべて</button></div><div class="shop-grid" id="sg-bd2"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">スリーパー（着る毛布） <span class="tag bt-good">買って正解</span></div><div class="bi-qty">1〜2枚</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd3')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd3"><div class="bd-tip gd">9月生まれは秋〜冬にかけて大活躍。掛け布団を蹴ってしまう赤ちゃんに。「買ってよかった」の声多数。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd3','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd3','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd3','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd3','all')">すべて</button></div><div class="shop-grid" id="sg-bd3"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">おくるみ・スワドル <span class="tag bt-good">買って正解</span></div><div class="bi-qty">2〜3枚</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd4')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd4"><div class="bd-tip gd">モロー反射で目が覚めるのを防ぐ「秘密兵器」という口コミ多数。バスタオルで代用も可。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd4','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd4','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd4','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd4','all')">すべて</button></div><div class="shop-grid" id="sg-bd4"></div></div>
+  </div>
+
+  <div class="bcat-hd open" onclick="toggleBcat(this)"><span class="bcat-icon">🩲</span><span class="bcat-title">おむつ・おしりケア</span><span class="bcat-count" id="bc1c"></span><span class="bcat-chev">▼</span></div>
+  <div class="bcat-body open" id="bc1">
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">紙おむつ（新生児サイズ） <span class="tag bt-must">必須</span></div><div class="bi-qty">まず1パックのみ購入</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd5')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd5"><div class="bd-tip wn">体型によってメーカーの合う合わないがある。まず1パックだけ購入し産後に合うメーカーを探すのが口コミ多数のアドバイス。新生児サイズはすぐサイズアウト、買い過ぎ注意。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd5','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd5','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd5','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd5','all')">すべて</button></div><div class="shop-grid" id="sg-bd5"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">おしりふき <span class="tag bt-must">必須</span></div><div class="bi-qty">大量（箱買い推奨）</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd6')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd6"><div class="bd-tip">新生児は1日8〜12回おむつ替えあり。厚手・水分多めのものが肌に優しい。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd6','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd6','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd6','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd6','all')">すべて</button></div><div class="shop-grid" id="sg-bd6"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">おしりふきウォーマー <span class="tag bt-good">買って正解</span></div><div class="bi-qty">1台</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd7')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd7"><div class="bd-tip gd">9月生まれは秋冬に特に効果発揮。「快便な子には特におすすめ」「おむつかぶれとも無縁」という口コミあり。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd7','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd7','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd7','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd7','all')">すべて</button></div><div class="shop-grid" id="sg-bd7"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">おむつ用ゴミ箱（おむつポット） <span class="tag bt-late">産後でOK</span></div><div class="bi-qty">1台</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd8')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd8"><div class="bd-tip wn">新生児期は臭いが気にならない場合も多い。離乳食が始まる頃から臭いが強くなる傾向あり。様子を見てから判断でOK。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd8','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd8','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd8','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd8','all')">すべて</button></div><div class="shop-grid" id="sg-bd8"></div></div>
+  </div>
+
+  <div class="bcat-hd open" onclick="toggleBcat(this)"><span class="bcat-icon">👕</span><span class="bcat-title">衣類・ウェア</span><span class="bcat-count" id="bc2c"></span><span class="bcat-chev">▼</span></div>
+  <div class="bcat-body open" id="bc2">
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">短肌着 <span class="tag bt-must">必須</span></div><div class="bi-qty">5〜6枚（60サイズ）</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd9')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd9"><div class="bd-tip">最も基本の肌着。1日に何度も替えるので多めに。9月生まれは薄手の綿素材でOK。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd9','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd9','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd9','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd9','all')">すべて</button></div><div class="shop-grid" id="sg-bd9"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">コンビ肌着 <span class="tag bt-must">必須</span></div><div class="bi-qty">5〜6枚（60サイズ）</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd10')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd10"><div class="bd-tip">股下スナップで動きやすい。短肌着の上に重ねて使う。前開きタイプが着せやすい。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd10','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd10','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd10','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd10','all')">すべて</button></div><div class="shop-grid" id="sg-bd10"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">2WAYオール <span class="tag bt-must">必須</span></div><div class="bi-qty">3〜4枚（60サイズ）</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd11')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd11"><div class="bd-tip gd">新生児〜数ヶ月まで使えてコスパ◎。ドレス型とカバーオール型の2通りに。退院時・お宮参りにも使える白系がおすすめ。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd11','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd11','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd11','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd11','all')">すべて</button></div><div class="shop-grid" id="sg-bd11"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">靴下・アウター（秋冬用） <span class="tag bt-late">産後でOK</span></div><div class="bi-qty">靴下2〜3足、アウター1〜2枚</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd12')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd12"><div class="bd-tip">1ヶ月健診ごろから秋になるので、その時期に合わせて準備でもOK。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd12','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd12','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd12','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd12','all')">すべて</button></div><div class="shop-grid" id="sg-bd12"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">ミトン・スタイ <span class="tag bt-skip">不要な場合も</span></div><div class="bi-qty">様子を見てから</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd13')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd13"><div class="bd-tip wn">「すぐ外れる」「使わなかった」という声多い。ギフトでもらえることも多いので産後様子を見てから購入でOK。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd13','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd13','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd13','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd13','all')">すべて</button></div><div class="shop-grid" id="sg-bd13"></div></div>
+  </div>
+
+  <div class="bcat-hd open" onclick="toggleBcat(this)"><span class="bcat-icon">🍼</span><span class="bcat-title">授乳・ミルクグッズ</span><span class="bcat-count" id="bc3c"></span><span class="bcat-chev">▼</span></div>
+  <div class="bcat-body open" id="bc3">
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">哺乳瓶（160ml ガラス製） <span class="tag bt-must">必須</span></div><div class="bi-qty">1〜2本</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd14')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd14"><div class="bd-tip">完全母乳でも最低1本は準備を。母乳が出ない・赤ちゃんが吸えない場合の備えに。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd14','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd14','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd14','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd14','all')">すべて</button></div><div class="shop-grid" id="sg-bd14"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">粉ミルク <span class="tag bt-must">必須</span></div><div class="bi-qty">小缶1つ</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd15')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd15"><div class="bd-tip">産後に母乳が安定するまで「足しミルク」をする場合も多い。産院で使っているメーカーに合わせると移行しやすい。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd15','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd15','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd15','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd15','all')">すべて</button></div><div class="shop-grid" id="sg-bd15"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">授乳クッション <span class="tag bt-good">買って正解</span></div><div class="bi-qty">1個（洗えるカバー付き）</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd16')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd16"><div class="bd-tip gd">「入院中から神グッズ」という口コミ多数。慣れない授乳姿勢を楽にしてくれる。カバーが外せて洗えるものを選ぶと◎。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd16','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd16','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd16','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd16','all')">すべて</button></div><div class="shop-grid" id="sg-bd16"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">哺乳瓶消毒グッズ＋ブラシ <span class="tag bt-must">必須</span></div><div class="bi-qty">1セット</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd17')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd17"><div class="bd-tip">電子レンジタイプが手軽で人気。乳首用の小さいブラシもセットになったものが便利。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd17','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd17','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd17','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd17','all')">すべて</button></div><div class="shop-grid" id="sg-bd17"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">調乳ポット <span class="tag bt-skip">不要な場合も</span></div><div class="bi-qty">必要に応じて</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd18')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd18"><div class="bd-tip wn">「電気ケトル＋魔法瓶で代用できた」という口コミが多い。産後様子を見てから購入でOK。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd18','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd18','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd18','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd18','all')">すべて</button></div><div class="shop-grid" id="sg-bd18"></div></div>
+  </div>
+
+  <div class="bcat-hd open" onclick="toggleBcat(this)"><span class="bcat-icon">🛁</span><span class="bcat-title">お風呂・沐浴グッズ</span><span class="bcat-count" id="bc4c"></span><span class="bcat-chev">▼</span></div>
+  <div class="bcat-body open" id="bc4">
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">ベビーバス <span class="tag bt-rent">レンタル推奨</span></div><div class="bi-qty">1台</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd19')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd19"><div class="bd-tip wn">使用期間は生後約1ヶ月と短い。空気で膨らむビニール製の簡易的なもので十分。</div><div id="rental-bd19"></div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd19','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd19','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd19','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd19','all')">すべて</button></div><div class="shop-grid" id="sg-bd19"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">ベビーソープ・シャンプー <span class="tag bt-must">必須</span></div><div class="bi-qty">1本（全身泡タイプが便利）</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd20')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd20"><div class="bd-tip">全身に使える泡タイプが一番使いやすいという声多数。無添加・低刺激を選ぶ。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd20','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd20','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd20','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd20','all')">すべて</button></div><div class="shop-grid" id="sg-bd20"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">ガーゼハンカチ <span class="tag bt-must">必須</span></div><div class="bi-qty">10〜15枚</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd21')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd21"><div class="bd-tip">沐浴・授乳後の口拭き・よだれ拭きなど使い道が多い。とにかく消費するので枚数多めが吉。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd21','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd21','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd21','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd21','all')">すべて</button></div><div class="shop-grid" id="sg-bd21"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">バスタオル・ベビーローション <span class="tag bt-must">必須</span></div><div class="bi-qty">バスタオル2〜3枚・ローション1本</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd22')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd22"><div class="bd-tip">沐浴後の保湿は毎日必要。無添加・無香料タイプを選ぶ。フード付きバスタオルは頭も包めて便利。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd22','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd22','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd22','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd22','all')">すべて</button></div><div class="shop-grid" id="sg-bd22"></div></div>
+  </div>
+
+  <div class="bcat-hd open" onclick="toggleBcat(this)"><span class="bcat-icon">🩺</span><span class="bcat-title">衛生・健康ケアグッズ</span><span class="bcat-count" id="bc5c"></span><span class="bcat-chev">▼</span></div>
+  <div class="bcat-body open" id="bc5">
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">体温計（電子式） <span class="tag bt-must">必須</span></div><div class="bi-qty">1本（10秒以内で計れるもの）</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd23')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd23"><div class="bd-tip">赤ちゃんの発熱の判断に必須。脇で計れる電子式が一般的。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd23','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd23','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd23','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd23','all')">すべて</button></div><div class="shop-grid" id="sg-bd23"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">赤ちゃん用爪切り <span class="tag bt-must">必須</span></div><div class="bi-qty">1本（はさみ型推奨）</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd24')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd24"><div class="bd-tip">新生児の爪は意外と伸びるのが早い。顔を引っかくため必須。お風呂上がりが爪が柔らかく切りやすい。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd24','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd24','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd24','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd24','all')">すべて</button></div><div class="shop-grid" id="sg-bd24"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">綿棒（ベビー用） <span class="tag bt-must">必須</span></div><div class="bi-qty">1箱</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd25')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd25"><div class="bd-tip">耳・鼻・へその緒のケアに使用。大人用より細いベビー用を準備。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd25','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd25','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd25','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd25','all')">すべて</button></div><div class="shop-grid" id="sg-bd25"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">鼻水吸引器 <span class="tag bt-late">産後でOK</span></div><div class="bi-qty">1台（電動タイプ推奨）</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd26')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd26"><div class="bd-tip wn">新生児期は鼻水が出ることは少ない。9月生まれは秋冬に風邪シーズンがくるので早めに準備してもよい。電動タイプが吸引力◎。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd26','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd26','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd26','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd26','all')">すべて</button></div><div class="shop-grid" id="sg-bd26"></div></div>
+  </div>
+
+  <div class="bcat-hd open" onclick="toggleBcat(this)"><span class="bcat-icon">🚗</span><span class="bcat-title">移動・外出グッズ</span><span class="bcat-count" id="bc6c"></span><span class="bcat-chev">▼</span></div>
+  <div class="bcat-body open" id="bc6">
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">チャイルドシート <span class="tag bt-must">必須</span></div><div class="bi-qty">1台（新生児から使えるもの）</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd27')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd27"><div class="bd-tip">退院時に車を使う場合は法律上必須（違反すると罰則あり）。中古を使う場合はリコール品でないか・部品の劣化を確認。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd27','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd27','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd27','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd27','all')">すべて</button></div><div class="shop-grid" id="sg-bd27"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">抱っこひも <span class="tag bt-good">買って正解</span></div><div class="bi-qty">1本（新生児対応のもの）</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd28')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd28"><div class="bd-tip gd">「家事をしながら」に大活躍。装着が簡単なタイプが口コミで人気。中古を使う場合はバックル・ベルトの劣化を要確認。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd28','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd28','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd28','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd28','all')">すべて</button></div><div class="shop-grid" id="sg-bd28"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">ベビーカー <span class="tag bt-late">産後でOK</span></div><div class="bi-qty">1台</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd29')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd29"><div class="bd-tip wn">新生児期はほとんど外出しないため産後購入でも間に合う。「軽さが最重要」という口コミが多い。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd29','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd29','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd29','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd29','all')">すべて</button></div><div class="shop-grid" id="sg-bd29"></div></div>
+  </div>
+
+  <div class="bcat-hd open" onclick="toggleBcat(this)"><span class="bcat-icon">✨</span><span class="bcat-title">あると便利（口コミ高評価）</span><span class="bcat-count" id="bc7c"></span><span class="bcat-chev">▼</span></div>
+  <div class="bcat-body open" id="bc7">
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">バウンサー <span class="tag bt-good">買って正解</span></div><div class="bi-qty">1台</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd30')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd30"><div class="bd-tip gd">「乗り心地がよいのか落ち着いて過ごしてくれる」「家事をする間の神グッズ」という口コミ多数。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd30','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd30','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd30','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd30','all')">すべて</button></div><div class="shop-grid" id="sg-bd30"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">ベビーモニター <span class="tag bt-good">買って正解</span></div><div class="bi-qty">1台</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd31')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd31"><div class="bd-tip gd">赤ちゃんを別室に寝かせる場合に。スマホと連携できるタイプが人気。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd31','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd31','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd31','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd31','all')">すべて</button></div><div class="shop-grid" id="sg-bd31"></div></div>
+    <div class="baby-item" onclick="toggleBaby(this)"><div class="b-box">✓</div><div class="bi-body"><div class="bi-name">おしゃぶり <span class="tag bt-skip">不要な場合も</span></div><div class="bi-qty">様子を見てから</div><button class="bd-toggle-btn" onclick="event.stopPropagation();toggleBd('bd32')">🛒 詳細・購入リンクを見る ▾</button></div></div>
+    <div class="baby-detail" id="bd32"><div class="bd-tip wn">「うちの子は全く受け付けなかった」という口コミが多い。産後に試してから購入で十分。</div><div class="per-site-row"><span class="psr-label">購入する場合：</span><button class="psr-btn" onclick="setPerSite('bd32','r')">楽天</button><button class="psr-btn" onclick="setPerSite('bd32','a')">Amazon</button><button class="psr-btn" onclick="setPerSite('bd32','y')">Yahoo</button><button class="psr-btn" onclick="setPerSite('bd32','all')">すべて</button></div><div class="shop-grid" id="sg-bd32"></div></div>
+  </div>
+
+  <div style="margin-top:16px;padding:12px 14px;background:var(--gdl);border-radius:12px;border:1px solid #e0c070;font-size:12.5px;color:#5a4010;line-height:1.7">
+    <strong>💡 先輩ママ共通アドバイス</strong><br>産前に全部揃えなくて大丈夫！まず「必須」タグのものを揃え、産後に赤ちゃんの様子を見ながら買い足す方が無駄が少ない。おむつのメーカー・哺乳瓶も産後に合うものを探してから買い足す。
+  </div>
+  <button class="reset-btn" onclick="resetBaby()">🔄 新生児用品チェックをリセット</button>
+</div>
+
+<div id="page-album" class="page">
+  <div class="alb-hd-bar">
+    <h3>📷 エコー写真・動画アルバム</h3>
+    <p>感熱紙のエコー写真は時間とともに色褪せます。<br>写真・動画を週数・コメントとともにデジタル保存しましょう。</p>
+    <div class="alb-week-now" id="alb-week-disp">📅 計算中...</div>
+  </div>
+  <div class="week-info-card">
+    <div class="wi-row"><span class="wi-title">👶 今週の赤ちゃんの様子</span><span class="wi-badge" id="wi-badge">--週</span></div>
+    <div class="wi-list" id="wi-list"><div class="wi-item"><span class="wi-icon">🔄</span>読み込み中...</div></div>
+  </div>
+  <div class="alb-type-tabs">
+    <button class="att active" id="att-all" onclick="filterAlbum('all',this)">🗂 すべて</button>
+    <button class="att" id="att-photo" onclick="filterAlbum('photo',this)">📷 写真</button>
+    <button class="att" id="att-video" onclick="filterAlbum('video',this)">🎥 動画</button>
+  </div>
+  <button class="alb-add-btn" onclick="openAddModal()"><span style="font-size:22px">＋</span> 写真・動画を追加する</button>
+  <div class="album-grid" id="album-grid"></div>
+  <div class="album-empty" id="album-empty"><div class="ei">🌱</div><p>まだ記録がありません。<br>「写真・動画を追加する」から<br>最初の1枚を登録しましょう！</p></div>
+</div>
+
+<div id="page-guide" class="page">
+  <div class="mg-intro">
+    <h3>🌿 妊婦さんの体と気持ちガイド</h3>
+    <p>同じ週数の先輩ママたちの声をもとにした、時期別の症状・辛さ・改善策をまとめました。</p>
+    <div class="mg-cur-week" id="mg-cur-week">📅 現在の週数を計算中...</div>
+  </div>
+  <input class="mg-search" type="search" placeholder="🔍 症状・週数で検索（例：つわり、腰痛）" oninput="filterGuide(this.value)" id="mg-search-input">
+  <div class="mg-chips" id="mg-chips">
+    <button class="mg-chip active" onclick="selectChip(this,'all')">すべて</button>
+    <button class="mg-chip" onclick="selectChip(this,'early')">初期（〜13週）</button>
+    <button class="mg-chip" onclick="selectChip(this,'mid')">中期（14〜27週）</button>
+    <button class="mg-chip" onclick="selectChip(this,'late')">後期（28〜36週）</button>
+    <button class="mg-chip" onclick="selectChip(this,'term')">臨月（37週〜）</button>
+    <button class="mg-chip" id="chip-now" onclick="selectChip(this,'now')">📅 今の週数</button>
+  </div>
+  <div id="guide-list"></div>
+</div>
+
+<div id="page-install" class="page">
+  <div class="sec-title">👫 夫婦で共有する</div>
+  <div class="share-status-bar disconnected" id="share-status-bar">
+    <div class="ssb-dot"></div>
+    <div><div class="ssb-text" id="ssb-text">未接続（このiPhoneのみ）</div><div class="ssb-sub" id="ssb-sub">共有するにはFirebaseを設定してください</div></div>
+  </div>
+  <div class="share-section" id="ss-step1">
+    <div class="share-section-hd" onclick="toggleShareSection('ss-step1')"><span class="ss-hd-icon">🔧</span><div class="ss-hd-info"><div class="ss-hd-title">STEP 1｜Firebaseを準備する（初回のみ）</div><div class="ss-hd-sub">Googleアカウントで無料プロジェクトを作成</div></div><span class="ss-chev">▼</span></div>
+    <div class="share-body"><div class="share-body-inner">
+      <div class="step-card"><div class="step-num-row"><span class="step-num">1</span><span class="step-title">Firebase Consoleを開く</span></div><div class="step-body">下のボタンをタップしてFirebase ConsoleをSafariで開いてください。Googleアカウントでログインします。</div><a class="step-link" href="https://console.firebase.google.com" target="_blank">🔗 Firebase Console を開く</a></div>
+      <div class="step-card"><div class="step-num-row"><span class="step-num">2</span><span class="step-title">新しいプロジェクトを作成</span></div><div class="step-body">「プロジェクトを追加」→ プロジェクト名を入力（例：ninsan-techou）→「続行」→ Googleアナリティクスは「オフ」→「プロジェクトを作成」</div></div>
+      <div class="step-card"><div class="step-num-row"><span class="step-num">3</span><span class="step-title">Realtime Databaseを有効にする</span></div><div class="step-body">プロジェクト画面左メニュー「構築」→「Realtime Database」→「データベースを作成」→ロケーションは「asia-southeast1（シンガポール）」→ セキュリティルールは「<strong>テストモード</strong>」を選択 →「有効にする」</div></div>
+      <div class="step-card"><div class="step-num-row"><span class="step-num">4</span><span class="step-title">ウェブアプリを登録して設定値をコピー</span></div><div class="step-body">プロジェクトの概要（歯車アイコン横の家マーク）→「ウェブアプリを追加」→ アプリ名を入力（例：ninsan）→「アプリを登録」→ 表示される<strong>firebaseConfig の内容</strong>をコピーする（次のSTEPで貼り付けます）</div></div>
+    </div></div>
+  </div>
+  <div class="share-section" id="ss-step2">
+    <div class="share-section-hd" onclick="toggleShareSection('ss-step2')"><span class="ss-hd-icon">📝</span><div class="ss-hd-info"><div class="ss-hd-title">STEP 2｜Firebase設定値を入力する</div><div class="ss-hd-sub">コピーした設定値をここに貼り付け</div></div><span class="ss-chev">▼</span></div>
+    <div class="share-body"><div class="share-body-inner">
+      <div style="font-size:12.5px;color:#444;margin-bottom:12px;line-height:1.65;background:#f9f5f1;padding:10px;border-radius:8px">FirebaseConsoleで「ウェブアプリを追加」後に表示されるfirebaseConfigから以下の値をコピーして入力してください。</div>
+      <label class="m-label">apiKey</label><input class="m-input-share" type="text" id="fb-apikey" placeholder="AIzaSy...">
+      <label class="m-label">authDomain</label><input class="m-input-share" type="text" id="fb-authdomain" placeholder="your-app.firebaseapp.com">
+      <label class="m-label">databaseURL</label><input class="m-input-share" type="text" id="fb-dburl" placeholder="https://your-app-default-rtdb.asia-southeast1.firebasedatabase.app">
+      <label class="m-label">projectId</label><input class="m-input-share" type="text" id="fb-projectid" placeholder="your-app-12345">
+      <button class="share-connect-btn" style="background:var(--gd);margin-bottom:4px" onclick="saveFbConfig()">💾 設定値を保存する</button>
+      <div id="fb-save-result" style="display:none;font-size:12.5px;color:var(--gn);text-align:center;margin-top:6px">✅ 保存しました！STEP3に進んでください</div>
+    </div></div>
+  </div>
+  <div class="share-section" id="ss-step3">
+    <div class="share-section-hd" onclick="toggleShareSection('ss-step3')"><span class="ss-hd-icon">🔑</span><div class="ss-hd-info"><div class="ss-hd-title">STEP 3｜ルームコードで接続する</div><div class="ss-hd-sub">夫婦で同じコードを入力するだけで同期開始</div></div><span class="ss-chev">▼</span></div>
+    <div class="share-body"><div class="share-body-inner">
+      <div style="font-size:12.5px;color:#444;margin-bottom:12px;line-height:1.65;background:#f9f5f1;padding:10px;border-radius:8px">好きな文字・数字を組み合わせたルームコードを決めて、<strong>夫婦2人が同じコードを入力</strong>してください。</div>
+      <label class="m-label">ルームコード（自由に決める）</label>
+      <input class="m-input-share" type="text" id="room-code-input" placeholder="例：sakura2026　tanaka-baby　など" maxlength="30">
+      <div class="photo-share-row">
+        <div><div class="psr-info">📷 写真・動画も共有する</div><div class="psr-info-sub">ON：圧縮して共有（画質やや低下・容量節約）<br>OFF：チェック状態のみ共有、写真はローカル保存</div></div>
+        <label class="toggle-wrap"><input type="checkbox" id="photo-share-toggle" onchange="savePhotoSharePref()"><span class="toggle-slider"></span></label>
+      </div>
+      <div style="font-size:11.5px;color:var(--sb);margin:6px 0 12px;padding:8px 10px;background:#f9f5f1;border-radius:8px;line-height:1.6">⚠ Firebase無料枠：ストレージ1GB・通信10GB/月。写真ONの場合は1枚を約100KBに圧縮して保存します（目安：約1,000枚まで）。</div>
+      <button class="share-connect-btn" onclick="connectRoom()" id="connect-btn">🔗 この端末を接続する</button>
+      <div id="connect-result" style="display:none;font-size:12.5px;color:var(--gn);text-align:center;margin-top:8px;padding:8px;background:var(--gnl);border-radius:8px;line-height:1.7"></div>
+      <button class="share-disconnect-btn" id="disconnect-btn" style="display:none" onclick="disconnectRoom()">接続を解除する</button>
+    </div></div>
+  </div>
+  <div id="sync-log-wrap" style="display:none;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin-bottom:12px">
+    <div style="font-size:13px;font-weight:700;color:var(--nv);margin-bottom:6px">🔄 同期ログ</div>
+    <div id="sync-log" style="font-size:11.5px;color:var(--sb);line-height:1.8"></div>
+  </div>
+  <div class="sec-title">このアプリをダウンロード</div>
+  <div class="dl-wrap">
+    <h3>📥 iPhoneに保存する</h3>
+    <button class="dl-btn" id="dl-btn" onclick="saveToFile()"><span style="font-size:24px">📥</span>このアプリをダウンロード</button>
+    <div id="dl-result" style="display:none;margin-top:12px">
+      <div style="background:#fff;border-radius:12px;padding:14px;border:2px solid #4ac48a">
+        <div style="font-size:15px;font-weight:800;color:#2d6a4f;margin-bottom:10px;display:flex;align-items:center;gap:6px"><span>✅</span> ダウンロード完了！次の手順へ</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:10px;background:#f0faf5;border-radius:10px"><div style="width:24px;height:24px;border-radius:50%;background:#2d6a4f;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div><div style="font-size:13px;color:#333;line-height:1.6">上の<strong>「📁 ファイルアプリを開く」</strong>をタップ</div></div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:10px;background:#f0faf5;border-radius:10px"><div style="width:24px;height:24px;border-radius:50%;background:#2d6a4f;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div><div style="font-size:13px;color:#333;line-height:1.6"><strong>「ダウンロード」フォルダ</strong>を開いて<br><strong style="color:#1e3a5f">kinchan.html</strong> をタップ</div></div>
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:10px;background:#f0faf5;border-radius:10px"><div style="width:24px;height:24px;border-radius:50%;background:#2d6a4f;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div><div style="font-size:13px;color:#333;line-height:1.6">Safariで開いたら<br>下の<strong>「□↑」→「ホーム画面に追加」</strong>で完了🎉</div></div>
+        </div>
+        <button onclick="openFiles('shareddocuments://')" style="width:100%;margin-top:12px;padding:13px;border:none;border-radius:12px;background:#1e3a5f;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-size:18px">📂</span> ファイルアプリを開く</button>
+      </div>
+    </div>
+  </div>
+  <div class="sec-title">ホーム画面にアプリとして追加する</div>
+  <div class="inst-card">
+    <h3>📲 ホーム画面に追加する手順</h3>
+    <div class="inst-step"><div class="inst-num">1</div><p>上の「ダウンロード」ボタンをタップ → <strong>ファイルアプリ</strong>の「ダウンロード」フォルダに保存される</p></div>
+    <div class="inst-step"><div class="inst-num">2</div><p><strong>ファイルアプリ</strong>を開いて「kinchan.html」をタップ → Safariで開く</p></div>
+    <div class="inst-step"><div class="inst-num">3</div><p>Safari下部の<strong>「□↑」共有ボタン</strong>をタップ</p></div>
+    <div class="inst-step"><div class="inst-num">4</div><p>メニューから<strong>「ホーム画面に追加」</strong>→「追加」をタップで完了🎉</p></div>
+  </div>
+  <div class="info-card">
+    <h4>✨ ホーム画面に追加すると…</h4>
+    <ul>
+      <li>アプリアイコンとしてホーム画面に登録される</li>
+      <li>アドレスバーが消えてフルスクリーン表示になる</li>
+      <li>チェック状態・エコー写真がこの端末に保存される</li>
+      <li>オフライン（ネットなし）でも使える</li>
+    </ul>
+  </div>
+  <div class="sec-title">連絡先</div>
+  <div class="con-card"><div class="con-icon">🏛</div><div class="con-info"><div class="con-name">青葉区役所 家庭健康課（3階）</div><div class="con-addr">青葉区上杉1丁目5-1</div><div class="con-tel">022-225-7211</div></div><a class="call-btn" href="tel:0222257211">📞 発信</a></div>
+  <div class="con-card"><div class="con-icon">🏛</div><div class="con-info"><div class="con-name">宮城野区役所 家庭健康課（2階）</div><div class="con-addr">宮城野区五輪2丁目12-35</div><div class="con-tel">022-291-2111</div></div><a class="call-btn" href="tel:0222912111">📞 発信</a></div>
+  <div class="con-card"><div class="con-icon">🏛</div><div class="con-info"><div class="con-name">若林区役所 家庭健康課（2階）</div><div class="con-addr">若林区保春院前丁3-1</div><div class="con-tel">022-282-1111</div></div><a class="call-btn" href="tel:0222821111">📞 発信</a></div>
+  <div class="con-card"><div class="con-icon">🏛</div><div class="con-info"><div class="con-name">太白区役所 家庭健康課（3階）</div><div class="con-addr">太白区長町南3丁目1-15</div><div class="con-tel">022-247-1111</div></div><a class="call-btn" href="tel:0222471111">📞 発信</a></div>
+  <div class="con-card"><div class="con-icon">🏛</div><div class="con-info"><div class="con-name">泉区役所 家庭健康課（東庁舎4階）</div><div class="con-addr">泉区泉中央2丁目1-1</div><div class="con-tel">022-372-3111</div></div><a class="call-btn" href="tel:0223723111">📞 発信</a></div>
+  <div class="con-card" style="background:var(--nvl);border-color:var(--nv)"><div class="con-icon">📱</div><div class="con-info"><div class="con-name" style="color:var(--nv)">仙台市 総合コールセンター</div><div class="con-addr">8:00〜20:00（年末年始は17時まで）</div><div class="con-tel">022-398-4894</div></div><a class="call-btn" href="tel:0223984894">📞 発信</a></div>
+  <p style="font-size:11.5px;color:var(--sb);margin-top:10px;text-align:center">窓口業務時間：平日8:30〜17:00（土日祝・年末年始休）</p>
+</div>
+
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showPage('check',this)"><span class="nav-ico">📋</span><span class="nav-lbl">手続き</span></button>
+  <button class="nav-btn" onclick="showPage('baby',this)"><span class="nav-ico">👶</span><span class="nav-lbl">新生児用品</span></button>
+  <button class="nav-btn" onclick="showPage('album',this)"><span class="nav-ico">📷</span><span class="nav-lbl">エコー写真</span></button>
+  <button class="nav-btn" onclick="showPage('guide',this)"><span class="nav-ico">🌿</span><span class="nav-lbl">ママガイド</span></button>
+  <button class="nav-btn" onclick="showPage('install',this)"><span class="nav-ico">⚙️</span><span class="nav-lbl">設定</span></button>
+</nav>
+
+<div class="modal-ov" id="add-modal">
+  <div class="modal-sheet">
+    <h3>📷 写真・動画を追加</h3>
+    <label class="m-label">種類</label>
+    <div class="m-type-btns">
+      <button class="m-type-btn active" id="mtype-photo" onclick="setMediaType('photo')">📷 写真</button>
+      <button class="m-type-btn" id="mtype-video" onclick="setMediaType('video')">🎥 動画</button>
+    </div>
+    <label class="m-label">ファイルを選択</label>
+    <div class="m-media-area" id="m-media-area" onclick="document.getElementById('m-file-input').click()">
+      <div class="m-media-ph" id="m-media-ph"><span>📷</span><p>タップして選ぶ</p></div>
+    </div>
+    <input type="file" id="m-file-input" accept="image/*" style="display:none" onchange="previewMedia(this)">
+    <div class="m-row">
+      <div><label class="m-label">妊娠週数</label><select class="m-select" id="m-week"></select></div>
+      <div><label class="m-label">健診日</label><input type="date" class="m-input" id="m-date"></div>
+    </div>
+    <label class="m-label">タイトル（任意）</label>
+    <input type="text" class="m-input" id="m-title" placeholder="例：初めての心拍確認！">
+    <label class="m-label">コメント・メモ</label>
+    <textarea class="m-ta" id="m-memo" placeholder="例：手を動かしててかわいかった♡　体重○g など"></textarea>
+    <div class="m-row">
+      <div><label class="m-label">体重（g）</label><input type="number" class="m-input" id="m-weight" placeholder="例：280"></div>
+      <div><label class="m-label">頭殿長/身長</label><input type="text" class="m-input" id="m-size" placeholder="例：15.2mm"></div>
+    </div>
+    <div class="m-btns">
+      <button class="m-cancel" onclick="closeAddModal()">キャンセル</button>
+      <button class="m-save" onclick="saveMedia()">💾 保存する</button>
+    </div>
+  </div>
+</div>
+
+<div class="detail-ov" id="detail-modal">
+  <div class="detail-sheet">
+    <div class="det-media" id="det-media"></div>
+    <div class="det-week" id="det-week"></div>
+    <div class="det-date" id="det-date"></div>
+    <div class="det-sizes" id="det-sizes"></div>
+    <div class="det-memo" id="det-memo"></div>
+    <div class="det-btns">
+      <button class="det-close" onclick="closeDetail()">閉じる</button>
+      <button class="det-del" onclick="deleteFromDetail()">🗑 削除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DOM IDキャッシュ（最適化） ──
+const _dc={};
+function $id(id){return _dc[id]||(_dc[id]=document.getElementById(id));}
+
+// ── 日付・週数計算 ──
+const DUE=new Date('2026-09-16');
+function getLMP(){const d=new Date(DUE);d.setDate(d.getDate()-280);return d;}
+function getWeek(){return Math.floor((new Date()-getLMP())/864e5/7);}
+function getDay(){return Math.floor((new Date()-getLMP())/864e5)%7;}
+
+// ── 週データ ──
+const WD={
+  4:{s:'けしの実ほど（〜0.2mm）',i:['着床完了','心臓の原型が形成','超音波で胎嚢が確認できる時期']},
+  5:{s:'ゴマほど（約4mm）',i:['心拍が始まる','手足の芽が現れ始める','つわりが始まる方も']},
+  6:{s:'小豆ほど（約8mm）',i:['心拍が超音波で確認できる時期','手・足・目・耳の原型ができてくる','つわりのピークが近づく']},
+  7:{s:'ブルーベリーほど（約1.2cm）',i:['脳・心臓・肺が急速に発達','手足の指が形成され始める','大きな動きをすることも']},
+  8:{s:'いちごほど（約1.5cm）',i:['人間らしい顔立ちに','手足をよく動かすようになる','つわりのピーク（8〜9週ごろ）']},
+  9:{s:'ぶどう1粒（約2.2cm）',i:['顔・鼻・口がはっきりしてくる','羊水の中で活発に動いている','胎盤が完成に近づく']},
+  10:{s:'さくらんぼ（約3.2cm）',i:['すべての主要器官が揃う','指紋が形成され始める','あくびや指しゃぶりをする']},
+  11:{s:'いちじく（約4.2cm）',i:['外生殖器が形成され始める','全身に産毛が生え始める','活発にキック・パンチをする']},
+  12:{s:'ライム（約5.4cm）',i:['胎盤が完成！安定期が近づく','骨格・筋肉がさらに発達','つわりが落ち着く方が増える']},
+  13:{s:'えんどう豆のさや（約6.5cm）',i:['指の骨が完成する','毛髪が発達する','声帯が形成される']},
+  14:{s:'レモン（約8cm）',i:['安定期に入る','体の器官がほぼ完成','赤ちゃんの性別がわかり始める可能性も']},
+  15:{s:'オレンジ（約10cm）',i:['毛髪・まゆ毛・まつ毛が生え始める','聴覚が発達し音を認識し始める','表情を作れるようになる']},
+  16:{s:'アボカド（約12cm・約100g）',i:['耳が聞こえるようになってくる','胎動を感じ始める方も','目がまぶたで覆われている']},
+  17:{s:'なし（約13cm・約140g）',i:['脂肪の蓄積が始まる','骨が硬くなっていく','胎動が増えてくる']},
+  18:{s:'さつまいも（約15cm・約190g）',i:['胎動を多くの方が感じ始める','性別がわかる場合が多い時期','耳がほぼ完成し外の音が聞こえる']},
+  19:{s:'トマト（約17cm・約240g）',i:['感覚器官が急速に発達','皮膚に胎脂が付き始める','ゆっくりと目を開けたり閉じたりできる']},
+  20:{s:'バナナ（約19cm・約300g）',i:['妊娠中間点に到達','爪が生え始める','嚥下の練習をしている']},
+  21:{s:'にんじん（約26cm・約360g）',i:['肺が急速に発達する','睡眠サイクルができ始める','味覚が発達してくる']},
+  22:{s:'パパイヤ（約27cm・約430g）',i:['肺の表面活性剤が作られ始める','外部の音楽に反応するようになる','聴力がほぼ完成']},
+  23:{s:'マンゴー（約29cm・約500g）',i:['パパ・ママの声を認識し始める','体毛が全身を覆っている','表情が豊かになる']},
+  24:{s:'トウモロコシ（約30cm・約600g）',i:['皮膚に皺があり透けて見える','光に反応するようになる','声に反応するようになる']},
+  25:{s:'カリフラワー（約34cm・約700g）',i:['手・足の指紋が完成','嗅覚が発達する','体重増加が著しくなってくる']},
+  26:{s:'レタス（約35cm・約860g）',i:['まぶたが開くようになる','体重が急激に増える']},
+  27:{s:'キャベツ（約37cm・約1000g）',i:['脳が急速に発達','体重が1000gを超える目安','筋肉と骨格がさらに強くなる']},
+  28:{s:'ナス（約38cm・約1100g）',i:['目が完全に開けるようになる','夢を見ている可能性がある','体を丸めた姿勢になる']},
+  29:{s:'カボチャ（約39cm・約1250g）',i:['筋力が増して力強い胎動に','頭を下にする姿勢をとり始める']},
+  30:{s:'白菜（約40cm・約1400g）',i:['体内の脂肪量が増える','爪が指先まで届く','免疫力が発達してくる']},
+  31:{s:'アスパラガス（約41cm・約1600g）',i:['臓器がほぼ機能している','五感がほぼ発達完了']},
+  32:{s:'スイカ（約43cm・約1800g）',i:['骨格が完成に近づく','子宮口方向に頭が向く準備']},
+  33:{s:'パイナップル（約44cm・約2000g）',i:['免疫システムが急速に発達','体重が2000gに近づく']},
+  34:{s:'カンタロープ（約45cm・約2200g）',i:['中枢神経系がほぼ完成','肺の成熟が進む']},
+  35:{s:'ハネデューメロン（約46cm・約2400g）',i:['肺がほぼ成熟する','感覚器官がすべて機能している']},
+  36:{s:'レモン（約47cm・約2600g）',i:['体重が急激に増える時期','胎脂が少なくなりふっくらした肌に']},
+  37:{s:'レタスの玉（約48cm・約2900g）',i:['正期産（37週〜）に入る！','いつ生まれてもOKな状態']},
+  38:{s:'ポロネギ（約49cm・約3100g）',i:['完成された赤ちゃん','頭部が骨盤に入り始める']},
+  39:{s:'スイカ（約50cm・約3300g）',i:['成熟した赤ちゃん','前駆陣痛が起きることも']},
+  40:{s:'かぼちゃ（約51cm・約3400g）',i:['出産予定日！','赤ちゃんはいつでも準備OK']},
+};
+
+// ── ガイドデータ ──
+const GUIDE=[
+  {id:'g1',period:'early',weeks:'5〜10週',title:'つわり（吐き気・嘔吐）',preview:'「朝から晩まで船酔いのよう」8〜9週がピークという声多数',
+   symptoms:[{name:'吐き気・嘔吐',badge:'ピーク：8〜9週',
+     voices:['朝から晩まで船酔いのような気持ち悪さが続いた。食べ物の匂いがとにかくダメだった','起き上がれないほどつらい日が続いた。自分だけこんなにつらいのかと孤独になった','夜中に何度も起きて吐いた。15週ごろから急に楽になった'],
+     tips:['枕元にクラッカー・飴を置いておき、起き上がる前に口に入れる','空腹になると悪化するため、2時間おきにちょこちょこ食べる','食べ物は冷ますと匂いが和らぐ。冷たいものや酸っぱいものが食べやすい方も','マスクにハッカ油をつけて匂い対策をする','あまりにつらい場合は産婦人科で吐き気止めを処方してもらえる']}]},
+  {id:'g2',period:'early',weeks:'5〜12週',title:'匂いつわり・食べつわり',preview:'特定の匂いがダメになる・食べないと気持ち悪い',
+   symptoms:[
+     {name:'匂いつわり',badge:'初期に多い',voices:['夫のシャンプーの匂いがダメになった。料理の匂いも無理で夫に全部任せた','電車の中でぐっと堪えるのがつらかった。マスクに好きな香りをつけて乗り切った'],tips:['苦手な匂いを徹底的に避ける。換気・アロマオイルなどで対策','料理はパートナーに任せる・外食・ミールキットを活用','冷たい食べ物は匂いが少なく食べやすいことが多い']},
+     {name:'食べつわり',badge:'空腹時に悪化',voices:['常に何か口にしないと気持ち悪かった。食べ続けると太るのが怖かった','おにぎりとクラッカーが神グッズだった'],tips:['常に少量の食べ物を口に入れ、空腹状態を避ける','ゼリー飲料・アイスなど冷たいものが食べやすい方も','体重管理は産後期に意識し、この時期は食べられるものを優先']}]},
+  {id:'g3',period:'early',weeks:'4〜16週',title:'強い眠気・倦怠感',preview:'「会社で意識が飛びそうになった」という声が多い時期',
+   symptoms:[{name:'強い眠気',badge:'初期全般',voices:['昼食後は眠すぎて仕事にならなかった。トイレで仮眠していた','一日中だるくて家事が何もできなかった。家族に協力してもらった'],tips:['昼休みに10〜15分の仮眠をとる','職場に正直に伝えて席を調整してもらう','無理をしないことが最優先。家事は手抜きでOK','プロゲステロン（黄体ホルモン）の影響によるものなので、14週ごろには楽になることが多い']}]},
+  {id:'g4',period:'early',weeks:'6〜16週',title:'情緒不安定・気分の波',preview:'ホルモンの影響で感情が揺れやすい時期',
+   symptoms:[{name:'情緒不安定',badge:'初期に多い',voices:['些細なことで涙が止まらなかった。赤ちゃんが無事かどうか毎日不安だった','夫の言葉に傷ついて口論ばかりだった。妊娠中はこれが普通だと後から知った'],tips:['感情の波はホルモンによるものと理解し、自分を責めない','気持ちを文章にまとめて、パートナーに読んでもらうことで理解を得る','映画やドラマなど気分転換できるものを見る','産婦人科の助産師さんや保健師さんに話を聞いてもらう']}]},
+  {id:'g5',period:'mid',weeks:'16〜28週',title:'腰痛・股関節痛',preview:'安定期に入ると出てきやすい。後期にかけて悪化しやすい',
+   symptoms:[{name:'腰痛・股関節痛',badge:'中期〜後期',voices:['16週ごろから腰が痛くなり始めた。朝起き上がるのがつらかった','股関節が痛くて寝返りがしにくくなった。横向きに抱き枕を使うと楽だった','マタニティヨガが気持ちよかった。インストラクターに相談して続けた'],tips:['抱き枕・ロング枕を使って横向き寝で腰の負担を減らす','マタニティヨガやストレッチで骨盤周りをほぐす','長時間同じ姿勢を避け、こまめに体を動かす','症状が強い場合は産婦人科に相談。骨盤ベルトを処方してもらえることも']}]},
+  {id:'g6',period:'mid',weeks:'14〜28週',title:'むくみ・足のつり',preview:'お腹が大きくなるにつれて血流が滞りやすくなる',
+   symptoms:[
+     {name:'むくみ',badge:'中期〜後期に悪化',voices:['夕方になると靴が履けないほど足がむくんだ。着圧ソックスが手放せなかった','指のむくみで指輪が外れなくなった。妊娠中に外しておいてよかった'],tips:['着圧ソックスを活用する','足を心臓より高い位置に上げて休む','塩分を控えめにし、水分はしっかり摂る（水分を控えると逆効果）','急激なむくみや頭痛・視野異常が伴う場合はすぐ受診（妊娠高血圧症の可能性）']},
+     {name:'足のつり（こむら返り）',badge:'夜間に多い',voices:['夜中に急に足がつって飛び起きた。毎晩のように起きていた時期があった'],tips:['ふくらはぎを寝る前にストレッチする','カルシウム・マグネシウムを意識して摂る','つったときは足を伸ばして足先を手前に引く']}]},
+  {id:'g7',period:'mid',weeks:'16〜32週',title:'貧血・立ちくらみ',preview:'妊娠中は血液量が増えるため、相対的に鉄分が不足しやすい',
+   symptoms:[{name:'貧血',badge:'中期に多い',voices:['急に立ち上がるとくらっとした。会社のトイレで座り込んだことがある','血液検査で貧血と言われ鉄剤を処方された。飲み始めてすぐ楽になった'],tips:['鉄分を多く含む食品（レバー・ほうれん草・ひじき）を摂る','ゆっくり立ち上がり、急な動作を避ける','健診で貧血と言われたら医師の指示に従い鉄剤を服用する','ビタミンCと一緒に摂ると鉄分の吸収が高まる']}]},
+  {id:'g8',period:'late',weeks:'28〜36週',title:'息苦しさ・動悸',preview:'子宮が横隔膜を圧迫するため、少し動くだけで息切れしやすくなる',
+   symptoms:[{name:'息苦しさ・動悸',badge:'後期に多い',voices:['階段を上るだけで息が切れた。横になっても苦しくて眠れない夜もあった','少し歩いただけで心臓がドキドキした。体が重くて動くのがつらかった'],tips:['上半身を少し起こした体勢で寝ると楽になる（抱き枕や枕を重ねる）','無理な運動は避け、ゆっくりと活動する','症状がひどい場合や急に悪化した場合はすぐ受診']}]},
+  {id:'g9',period:'late',weeks:'26〜40週',title:'頻尿・尿漏れ',preview:'子宮が膀胱を圧迫するため、頻繁にトイレに行きたくなる',
+   symptoms:[{name:'頻尿・尿漏れ',badge:'後期に増加',voices:['夜中に3〜4回起きることもあった。出かけるときはトイレの場所を必ず確認した','くしゃみをすると少し漏れてしまうことがあった。ナプキンが手放せなかった'],tips:['外出前にトイレに行く習慣をつける','骨盤底筋トレーニング（ケーゲル体操）を行う','尿漏れが気になる場合は薄手のパッドを使う','水分は適切に摂る（控えすぎると膀胱炎になりやすい）']}]},
+  {id:'g10',period:'late',weeks:'28〜40週',title:'便秘・痔',preview:'プロゲステロンの影響で腸の動きが鈍くなりやすい',
+   symptoms:[{name:'便秘',badge:'後期に悪化',voices:['後期になってから全然出なかった。先生に相談したら薬を出してくれてすごく楽になった','食物繊維と水分を意識したら改善した'],tips:['水分を十分に摂る（1日1.5〜2L目安）','食物繊維の多い食品（野菜・果物・海藻）を摂る','適度な散歩など軽い運動を続ける','症状がひどい場合は産婦人科で妊婦でも使える整腸剤を処方してもらえる']}]},
+  {id:'g11',period:'term',weeks:'37〜40週',title:'臨月の不安と出産への怖さ',preview:'「いつ始まるかわからない不安」「痛みへの恐怖」が大きくなる時期',
+   symptoms:[{name:'出産への不安・恐怖',badge:'臨月全般',voices:['陣痛がどれくらい痛いのか怖くて眠れない夜があった。両親学級で聞いてから少し気持ちが楽になった','いつ始まるかわからなくて常にドキドキしていた。パートナーに連絡をこまめにするようにした','前駆陣痛と本陣痛の違いがわからなくて焦った'],tips:['両親学級・産院のクラスで出産の流れを事前に確認する','陣痛の目安（規則的な10分おきの痛み）を把握しておく','病院に連絡するタイミングをパートナーと確認しておく','出産バッグの最終確認をしてすぐ動ける状態にしておく','産後の生活を想像しながら「もうすぐ会える」とポジティブに考える']}]},
+  {id:'g12',period:'term',weeks:'36〜40週',title:'前駆陣痛・おしるし',preview:'本番の陣痛との違いがわかりにくく戸惑う方が多い',
+   symptoms:[{name:'前駆陣痛・おしるし',badge:'臨月',voices:['前駆陣痛が3日間続いて本陣痛と間違えて病院に行ってしまった','おしるしから3日後に本陣痛が来た。おしるし後は荷物を常に持ち歩いた'],tips:['前駆陣痛：不規則、痛みが変化する。本陣痛：規則的に10分おき以内で来て強くなる','おしるしが来たらパートナーに連絡し、入院バッグを確認する','不安なときは産院に電話で相談してOK（それが産院の役割）','破水（液体が流れ出る感覚）があったらすぐ産院に連絡して横になる']}]},
+  {id:'g13',period:'mid',weeks:'16〜36週',title:'胎動の感じ方・不安',preview:'「動きすぎ？少なすぎ？」初めての感覚に戸惑いやすい',
+   symptoms:[{name:'胎動の感じ方',badge:'16週ごろ〜',
+     voices:['最初はポコポコ、ガス？と区別できなかった。23週ごろから確実に動いてるとわかった','胎動が多い日と少ない日の差が大きくて不安だった。先生に聞いたら「赤ちゃんにも寝起きがある」と言われて安心した','後期になると蹴りが痛いほど力強くなって、肋骨に当たって息が止まることも'],
+     tips:['最初の胎動（初感）は「お腹がポコッとする」「泡がはじけるような感覚」と表現する方が多い','28週以降は1時間に10回以上が目安。極端に減った場合は産院に連絡を','赤ちゃんは睡眠サイクル（20〜40分）があるため、少し待ってから確認する','食事後・横になったとき・お風呂上がりに動きやすい','後期に胎動が急に減った・なくなったと感じたらすぐ産院へ（受診の目安）']}]},
+  {id:'g14',period:'mid',weeks:'20〜36週',title:'妊娠線の予防・ケア',preview:'お腹・胸・太ももに出やすい。早めのケアが大切',
+   symptoms:[{name:'妊娠線',badge:'20週ごろ〜急増',
+     voices:['気づいたら下腹部に赤い線が入っていた。ケアをサボった週に限って増えた気がする','毎日クリームを塗っていたのに出てしまった。体質もあると割り切った','お腹だけでなく太ももと胸にも出た。全身ケアが必要だと後から知った'],
+     tips:['保湿クリーム・オイルを1日2回、入浴後すぐ塗るのが効果的','ケアのタイミング：お風呂上がり（皮膚が柔らかいうち）に塗ると浸透しやすい','お腹・胸・太もも・お尻・腰まわりを広範囲にケアする','体重増加が急激だと出やすいため、急激な増加を避けることも予防に','出てしまった場合は薄くなることはあるが消えないことを理解した上でケアを継続']}]},
+  {id:'g15',period:'mid',weeks:'22〜36週',title:'夜眠れない・不眠',preview:'お腹の重さ・頻尿・胎動で眠りが浅くなりやすい',
+   symptoms:[{name:'不眠・睡眠の質の低下',badge:'中期後半〜後期',
+     voices:['お腹が大きくなってからは仰向けで寝られなくなった。左を向いて寝るのが正解と知って楽になった','夜中に何度もトイレで起きるうちに眠れなくなってしまった','胎動が夜に活発で目が覚める。かわいいけどつらかった'],
+     tips:['抱き枕を使って左側臥位（左向き寝）で寝ると腰・お腹の圧迫が楽になる','寝る前のスマホをやめ、照明を落として体を温める（入浴など）','カモミールティーや温めたホットミルクがリラックスに効果的','昼間に短い仮眠（15〜20分）をとって睡眠不足を補う','眠れなくても横になるだけで体は休まると割り切ることも大切']}]},
+  {id:'g16',period:'late',weeks:'28〜40週',title:'恥骨痛・骨盤の痛み',preview:'「歩くたびズキッ」「立ち上がりが激痛」後期に急増',
+   symptoms:[{name:'恥骨痛・骨盤痛',badge:'後期に多い',
+     voices:['28週ごろから恥骨が痛くて普通に歩けなくなった。ガニ股でゆっくり歩くしかなかった','寝返りのたびに骨盤がズキッとした。夜中に痛みで目が覚めることも','産婦人科で骨盤ベルトを処方してもらったら劇的に楽になった'],
+     tips:['骨盤ベルトを産婦人科または市販で入手する（サポートベルト）','立ち上がるときはゆっくり、いったん横向きになってから起き上がる','歩幅を小さくして、股を開きすぎない歩き方を意識する','長時間の立ち仕事・歩行は避ける','痛みが強い場合は無理せず産院に相談（恥骨結合離開の可能性も）']}]},
+  {id:'g17',period:'late',weeks:'28〜40週',title:'手のしびれ・腱鞘炎',preview:'後期に急増。産後も続く場合がある',
+   symptoms:[{name:'手のしびれ・腱鞘炎',badge:'後期〜産後',
+     voices:['夜中に手がしびれて目が覚めた。朝起きると指が動かしにくかった','産後に授乳が始まってから腱鞘炎がひどくなった。抱っこの姿勢で悪化した感じ','手首をサポーターで固定したら夜のしびれがだいぶ楽になった'],
+     tips:['手根管症候群（妊娠中のホルモンによる神経圧迫）が原因のことが多い','手首のサポーターを着けて寝ると夜間のしびれが軽減される','手首を動かすストレッチを日中こまめに行う','産後は授乳・抱っこで手首に負担がかかるため、正しい姿勢を意識する','授乳クッションを活用して手首への負担を減らす']}]},
+  {id:'g18',period:'term',weeks:'37〜40週',title:'入院準備・産後の生活イメージ',preview:'「準備できてる？」という漠然とした不安を解消したい',
+   symptoms:[{name:'入院バッグ・産後準備',badge:'36週までに完了推奨',
+     voices:['34週で入院バッグを完成させたら気持ちがすごく楽になった。早めに準備してよかった','産後の生活を全くイメージできていなかった。退院後のワンオペが想像以上につらかった','産前に夫と家事分担・育児分担を話し合っておいてよかった。アプリで共有した'],
+     tips:['入院バッグ（陣痛バッグ）は35週までに玄関に置いておく','産院のリストに加えて：充電器・S字フック・ペットボトル用ストロー・お菓子・イヤホンを追加','退院後の2週間は「動かない週間」と決めて、宅配・ネットスーパーをフル活用','パートナーと「夜中の担当」「沐浴の担当」を事前に決めておく','産後うつは10〜15%の方に見られる。「つらい」と感じたら一人で抱え込まず助産師・保健師に相談を']}]},
+];
+
+// ── ショップデータ（配列化で軽量化） ──
+const SK=['ベビー布団セット 新生児','ベビーベッド 新生児','防水シーツ ベビー','スリーパー ベビー 秋冬','おくるみ スワドル 新生児','紙おむつ 新生児サイズ','おしりふき 新生児 箱','おしりふきウォーマー','おむつポット','短肌着 新生児 60サイズ','コンビ肌着 新生児','2WAYオール 新生児','ベビー靴下 アウター 秋冬','ベビーミトン スタイ','哺乳瓶 ガラス 160ml 新生児','粉ミルク 新生児','授乳クッション','哺乳瓶消毒 電子レンジ セット','調乳ポット ベビー','ベビーバス 折りたたみ','ベビーソープ 全身 泡 無添加','ガーゼハンカチ ベビー','バスタオル ベビー 保湿ローション','体温計 赤ちゃん 電子','爪切り 赤ちゃん はさみ型','ベビー綿棒','鼻水吸引器 電動 赤ちゃん','チャイルドシート 新生児','抱っこひも 新生児対応','ベビーカー 軽量','バウンサー ベビー','ベビーモニター スマホ連携','おしゃぶり 新生児'];
+const PR=[['5,000〜9,000円','8,000〜15,000円','3,000〜8,000円'],['8,000〜15,000円','12,000〜25,000円','6,000〜15,000円'],['500〜1,500円','800〜2,000円','400〜1,200円'],['1,000〜2,500円','2,000〜4,000円','1,500〜5,000円'],['1,000〜3,000円','2,000〜4,000円','1,500〜8,000円'],['400〜700円/P','500〜900円/P','350〜600円/P'],['300〜600円/P','400〜700円/P','280〜500円/P'],['1,500〜2,500円','2,000〜3,500円','1,200〜3,000円'],['1,000〜2,500円','1,500〜3,000円','900〜2,500円'],['200〜500円/枚','300〜600円/枚','150〜400円/枚'],['300〜600円/枚','400〜700円/枚','200〜500円/枚'],['500〜1,500円/枚','700〜2,000円/枚','500〜1,500円/枚'],['200〜800円','300〜1,200円','150〜600円'],['200〜600円','300〜800円','200〜700円'],['500〜1,200円','700〜1,500円','600〜1,500円'],['800〜1,500円/缶','900〜1,800円/缶','700〜1,500円/缶'],['1,500〜3,000円','2,000〜4,000円','2,000〜5,000円'],['800〜2,000円','1,000〜2,500円','800〜2,500円'],['2,000〜4,000円','2,500〜5,000円','1,500〜4,000円'],['500〜1,500円','800〜2,000円','500〜2,000円'],['300〜800円','500〜1,200円','400〜1,500円'],['200〜600円/10枚','300〜800円/10枚','200〜700円/10枚'],['500〜1,500円','700〜2,000円','500〜2,000円'],['800〜2,000円','1,000〜3,000円','800〜3,000円'],['300〜800円','400〜1,000円','300〜1,200円'],['100〜300円','150〜400円','100〜300円'],['取扱なし','3,000〜5,000円','3,000〜8,000円'],['8,000〜30,000円','15,000〜60,000円','8,000〜80,000円'],['3,000〜8,000円','5,000〜15,000円','4,000〜30,000円'],['5,000〜15,000円','15,000〜60,000円','8,000〜80,000円'],['3,000〜8,000円','5,000〜12,000円','5,000〜20,000円'],['取扱なし','5,000〜15,000円','3,000〜15,000円'],['300〜800円','400〜1,000円','300〜1,500円']];
+
+// ── レンタルHTML関数（重複解消） ──
+function rentalHtml(kasiteNote,babyrentaNote){
+  return '<div style="background:linear-gradient(135deg,#3d7a68,#5a9e8a);border-radius:10px;padding:11px 13px;margin-bottom:10px">'+
+    '<div style="color:#fff;font-size:12px;font-weight:700;margin-bottom:8px">📍 仙台エリアのレンタル店舗</div>'+
+    '<div style="display:flex;flex-direction:column;gap:7px">'+
+      '<div style="background:rgba(255,255,255,.15);border-radius:8px;padding:9px 11px">'+
+        '<div style="color:#fff;font-size:12.5px;font-weight:700;margin-bottom:2px">🏪 かしてネッと 仙台ステーション</div>'+
+        '<div style="color:rgba(255,255,255,.85);font-size:11.5px;line-height:1.6">名取市高舘熊野堂字余方上30<br>来店受取・返却で<strong style="color:#ffd97a">送料無料</strong>\u3000'+kasiteNote+'</div>'+
+        '<a href="tel:0222267166" style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.2);color:#fff;border-radius:6px;padding:5px 11px;font-size:12px;font-weight:700;text-decoration:none;margin-top:6px">📞 022-226-7166</a>'+
+      '</div>'+
+      '<div style="background:rgba(255,255,255,.15);border-radius:8px;padding:9px 11px">'+
+        '<div style="color:#fff;font-size:12.5px;font-weight:700;margin-bottom:2px">🌐 ベビレンタ（ネット通販）</div>'+
+        '<div style="color:rgba(255,255,255,.85);font-size:11.5px;line-height:1.6">仙台市へ<strong style="color:#ffd97a">最短翌日配送</strong>\u3000'+babyrentaNote+'<br>3日間返金補償あり・気に入ればそのまま購入可</div>'+
+        '<a href="https://babyrenta.com" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.2);color:#fff;border-radius:6px;padding:5px 11px;font-size:12px;font-weight:700;text-decoration:none;margin-top:6px">🔗 ベビレンタを見る</a>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+
+// ── ページナビ ──
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='album') renderAlbum();
+  if(id==='guide') renderGuide();
+}
+
+// ── フェーズ ──
+function togglePhase(hd){hd.classList.toggle('open');hd.nextElementSibling.classList.toggle('open');}
+
+// ── チェック ──
+let _checkItems=null,_babyItems=null;
+function _getCI(){return _checkItems||(_checkItems=Array.from(document.querySelectorAll('.check-item')));}
+function _getBI(){return _babyItems||(_babyItems=Array.from(document.querySelectorAll('.baby-item')));}
+
+function toggleCheck(el){el.classList.toggle('done');if(navigator.vibrate)navigator.vibrate(8);updateProgress();saveState();}
+function updateProgress(){
+  const phases=[{cid:'ph1c',sel:'.ph1~.phase-body .check-item'},{cid:'ph2c',sel:'.ph2~.phase-body .check-item'},{cid:'ph3c',sel:'.ph3~.phase-body .check-item'},{cid:'ph4c',sel:'.ph4~.phase-body .check-item'},{cid:'ph5c',sel:'.ph5~.phase-body .check-item'}];
+  let ta=0,td=0;
+  phases.forEach(p=>{const a=document.querySelectorAll(p.sel).length,d=document.querySelectorAll(p.sel+'.done').length;ta+=a;td+=d;const el=$id(p.cid);if(el)el.textContent=d+'/'+a+' 完了';});
+  const pct=ta?Math.round(td/ta*100):0;
+  $id('prog-text').textContent=td+' / '+ta+' 項目 ('+pct+'%)';
+  $id('prog-bar').style.width=pct+'%';
+}
+function resetChecks(){if(!confirm('手続きチェックをすべてリセットしますか？'))return;document.querySelectorAll('.check-item').forEach(i=>i.classList.remove('done'));updateProgress();saveState();}
+
+// ── ベビー用品 ──
+function toggleBaby(el){el.classList.toggle('done');if(navigator.vibrate)navigator.vibrate(8);updateBaby();saveState();}
+function toggleBcat(hd){hd.classList.toggle('open');hd.nextElementSibling.classList.toggle('open');}
+function updateBaby(){
+  let ta=0,td=0;
+  for(let i=0;i<=7;i++){const body=$id('bc'+i);if(!body)continue;const a=body.querySelectorAll('.baby-item').length,d=body.querySelectorAll('.baby-item.done').length;ta+=a;td+=d;const el=$id('bc'+i+'c');if(el)el.textContent=d+'/'+a+' 完了';}
+  const pct=ta?Math.round(td/ta*100):0;
+  $id('baby-prog-text').textContent=td+' / '+ta+' 点 ('+pct+'%)';
+  $id('baby-prog-bar').style.width=pct+'%';
+}
+function resetBaby(){if(!confirm('新生児用品チェックをリセットしますか？'))return;document.querySelectorAll('.baby-item').forEach(i=>i.classList.remove('done'));updateBaby();saveState();}
+
+// ── アルバム ──
+let albumData=[],albumFilter='all',detailIdx=null,currentMediaType='photo',currentMediaData=null;
+
+function updateAlbumWeekInfo(){
+  const w=getWeek(),d=getDay();
+  const wd=$id('alb-week-disp'),badge=$id('wi-badge'),list=$id('wi-list');
+  if(!wd)return;
+  if(w<4||w>42){wd.textContent='📅 出産予定日まであと準備中';return;}
+  wd.textContent='📅 現在 妊娠'+w+'週'+d+'日';
+  if(badge)badge.textContent=w+'週';
+  const info=WD[w]||WD[40];
+  if(info&&list)list.innerHTML='<div class="wi-item"><span class="wi-icon">📏</span>大きさの目安：<strong>'+info.s+'</strong></div>'+info.i.map(x=>'<div class="wi-item"><span class="wi-icon">✨</span>'+x+'</div>').join('');
+}
+
+function buildWeekSelect(){
+  const sel=$id('m-week');if(!sel||sel.options.length>1)return;
+  for(let w=4;w<=42;w++){const o=document.createElement('option');o.value=w;o.textContent='妊娠'+w+'週';sel.appendChild(o);}
+  const cur=getWeek();if(cur>=4&&cur<=42)sel.value=cur;
+}
+
+function setMediaType(type){
+  currentMediaType=type;
+  $id('mtype-photo').classList.toggle('active',type==='photo');
+  $id('mtype-video').classList.toggle('active',type==='video');
+  const input=$id('m-file-input');input.accept=type==='video'?'image/*,video/*':'image/*';
+  currentMediaData=null;
+  const area=$id('m-media-area'),ph=$id('m-media-ph');
+  const prev=area.querySelector('img,video');if(prev)prev.remove();
+  ph.style.display='flex';ph.innerHTML='<span>'+(type==='video'?'🎥':'📷')+'</span><p>タップして選ぶ</p>';
+}
+
+function previewMedia(input){
+  const file=input.files[0];if(!file)return;
+  const isVideo=file.type.startsWith('video/');
+  const reader=new FileReader();
+  reader.onload=e=>{
+    currentMediaData=e.target.result;
+    const area=$id('m-media-area'),ph=$id('m-media-ph');
+    const old=area.querySelector('img,video');if(old)old.remove();
+    if(isVideo){const v=document.createElement('video');v.src=currentMediaData;v.controls=true;v.style.cssText='width:100%;height:100%;object-fit:cover';area.appendChild(v);}
+    else{const img=document.createElement('img');img.src=currentMediaData;img.style.cssText='width:100%;height:100%;object-fit:cover';area.appendChild(img);}
+    ph.style.display='none';
+    if(isVideo)currentMediaType='video';else currentMediaType='photo';
+  };
+  reader.readAsDataURL(file);
+}
+
+function openAddModal(){buildWeekSelect();$id('m-date').value=new Date().toISOString().split('T')[0];['m-title','m-memo','m-weight','m-size'].forEach(id=>{const el=$id(id);if(el)el.value='';});currentMediaData=null;currentMediaType='photo';setMediaType('photo');$id('add-modal').classList.add('open');}
+function closeAddModal(){$id('add-modal').classList.remove('open');}
+
+function saveMedia(){
+  const week=$id('m-week').value;
+  if(!week){alert('妊娠週数を選択してください');return;}
+  albumData.unshift({id:Date.now(),type:currentMediaType,week:parseInt(week),date:$id('m-date').value,title:($id('m-title').value.trim()||'妊娠'+week+'週の記録'),memo:$id('m-memo').value.trim(),weight:$id('m-weight').value.trim(),size:$id('m-size').value.trim(),media:currentMediaData||null});
+  saveAlbumData();_lastAlbumKey='';renderAlbum();closeAddModal();
+}
+
+function filterAlbum(type,btn){albumFilter=type;document.querySelectorAll('.att').forEach(b=>b.classList.remove('active'));btn.classList.add('active');_lastAlbumKey='';renderAlbum();}
+
+let _lastAlbumKey='';
+function renderAlbum(){
+  const key=albumData.length+'|'+albumFilter;
+  if(key===_lastAlbumKey)return;
+  _lastAlbumKey=key;
+  const grid=$id('album-grid'),empty=$id('album-empty');
+  if(!grid)return;
+  const filtered=albumFilter==='all'?albumData:albumData.filter(p=>p.type===albumFilter);
+  grid.innerHTML='';
+  empty.style.display=filtered.length===0?'block':'none';
+  filtered.forEach(p=>{
+    const realIdx=albumData.indexOf(p);
+    const card=document.createElement('div');
+    card.className='album-card';
+    const isVideo=p.type==='video';
+    let mc='<span style="font-size:48px">'+(isVideo?'🎥':'🌱')+'</span>';
+    if(p.media){if(isVideo)mc='<video src="'+p.media+'" style="width:100%;height:100%;object-fit:cover" muted playsinline></video>';else mc='<img src="'+p.media+'" alt="エコー写真" style="width:100%;height:100%;object-fit:cover">';}
+    card.innerHTML='<div class="alb-img">'+mc+'<div class="alb-week-badge">妊娠'+p.week+'週</div>'+(isVideo?'<div class="alb-type-badge">🎥 動画</div>':'')+'</div>'+
+      '<div class="alb-card-body"><div class="alb-card-date">'+fmtDate(p.date)+'</div><div class="alb-card-title">'+esc(p.title)+'</div>'+(p.memo?'<div class="alb-card-memo">'+esc(p.memo)+'</div>':'')+'</div>'+
+      '<button class="alb-del-btn" onclick="event.stopPropagation();delMedia('+realIdx+')">×</button>';
+    card.onclick=()=>openDetail(realIdx);
+    grid.appendChild(card);
+  });
+}
+
+function openDetail(i){
+  detailIdx=i;const p=albumData[i];
+  const info=WD[p.week]||WD[40];
+  const mw=$id('det-media');
+  if(p.media){if(p.type==='video')mw.innerHTML='<video src="'+p.media+'" controls style="width:100%;border-radius:14px;max-height:55vw"></video>';else mw.innerHTML='<img src="'+p.media+'" alt="エコー写真" style="width:100%;border-radius:14px;">';}
+  else{mw.innerHTML='<span style="font-size:64px">'+(p.type==='video'?'🎥':'🌱')+'</span>';}
+  $id('det-week').textContent='妊娠'+p.week+'週';
+  $id('det-date').textContent=fmtDate(p.date)+'　'+esc(p.title);
+  const sizes=[];
+  if(p.weight)sizes.push('⚖️ '+p.weight+'g');
+  if(p.size)sizes.push('📏 '+esc(p.size));
+  if(info)sizes.push('🍎 '+info.s);
+  $id('det-sizes').innerHTML=sizes.map(s=>'<span class="det-badge">'+s+'</span>').join('');
+  $id('det-memo').textContent=p.memo||'（コメントなし）';
+  $id('detail-modal').classList.add('open');
+}
+function closeDetail(){$id('detail-modal').classList.remove('open');detailIdx=null;}
+function deleteFromDetail(){if(detailIdx===null)return;if(!confirm('この記録を削除しますか？'))return;albumData.splice(detailIdx,1);saveAlbumData();_lastAlbumKey='';renderAlbum();closeDetail();}
+function delMedia(i){if(!confirm('この記録を削除しますか？'))return;albumData.splice(i,1);saveAlbumData();_lastAlbumKey='';renderAlbum();}
+function saveAlbumData(){try{localStorage.setItem('sendai_album_v2',JSON.stringify(albumData));}catch(e){}}
+function loadAlbumData(){try{const s=localStorage.getItem('sendai_album_v2');if(s)albumData=JSON.parse(s);}catch(e){}}
+
+// ── ガイド（キャッシュ付き） ──
+let guideFilter='all',guideSearch='',_gCache=null,_gFK='',_gSK='';
+
+function updateGuideWeek(){const w=getWeek(),d=getDay();const el=$id('mg-cur-week');if(!el)return;if(w>=4&&w<=42)el.textContent='📅 現在 妊娠'+w+'週'+d+'日';else el.textContent='📅 週数計算中...';}
+
+function selectChip(btn,filter){guideFilter=filter;_gCache=null;document.querySelectorAll('.mg-chip').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderGuide();}
+
+let _guideTimer=null;
+function filterGuide(q){
+  guideSearch=q.toLowerCase();_gCache=null;
+  clearTimeout(_guideTimer);
+  _guideTimer=setTimeout(renderGuide,200);
+}
+
+function _periodForWeek(w){
+  if(w<=13)return 'early';
+  if(w<=27)return 'mid';
+  if(w<=36)return 'late';
+  return 'term';
+}
+
+function renderGuide(){
+  const container=$id('guide-list');if(!container)return;
+  const key=guideFilter+'|'+guideSearch;
+  if(key===_gFK+'|'+_gSK&&_gCache!==null){container.innerHTML=_gCache;return;}
+  const curPeriod=_periodForWeek(getWeek());
+  const filtered=GUIDE.filter(g=>{
+    let pOk;
+    if(guideFilter==='all')pOk=true;
+    else if(guideFilter==='now')pOk=g.period===curPeriod;
+    else pOk=g.period===guideFilter;
+    const sOk=!guideSearch||(g.title+g.preview+g.symptoms.map(s=>s.name+s.voices.join('')+s.tips.join('')).join('')).toLowerCase().includes(guideSearch);
+    return pOk&&sOk;
+  });
+  if(filtered.length===0){container.innerHTML='<div class="mg-empty">該当する情報が見つかりませんでした。<br>別のキーワードで検索してみてください。</div>';return;}
+  container.innerHTML=filtered.map(g=>`
+    <div class="mg-card" id="${g.id}">
+      <div class="mg-card-hd" onclick="toggleMgCard(this)">
+        <span class="mg-wk-badge">${g.weeks}</span>
+        <div class="mg-card-info"><div class="mg-card-title">${g.title}</div><div class="mg-card-prev">${g.preview}</div></div>
+        <span class="mg-chev">▼</span>
+      </div>
+      <div class="mg-body"><div class="mg-body-inner">
+        ${g.symptoms.map((s,si)=>`
+          <div class="mg-symp">
+            <div class="mg-symp-title">${s.name} <span class="mg-symp-badge">${s.badge}</span></div>
+            <div class="mg-voices">${s.voices.map(v=>'<div class="mg-voice">'+esc(v)+'</div>').join('')}</div>
+            <div class="mg-tips-box"><div class="mg-tips-title">✅ 先輩ママの改善策・対処法</div>${s.tips.map(t=>'<div class="mg-tip">'+esc(t)+'</div>').join('')}</div>
+            ${si<g.symptoms.length-1?'<div class="mg-divider"></div>':''}
+          </div>`).join('')}
+      </div></div>
+    </div>`).join('');
+  _gCache=container.innerHTML;_gFK=guideFilter;_gSK=guideSearch;
+}
+
+function toggleMgCard(hd){hd.closest('.mg-card').classList.toggle('open');}
+
+// ── 保存・読込 ──
+function saveState(){
+  try{
+    const checks=_getCI().map(i=>i.classList.contains('done'));
+    const babys=_getBI().map(i=>i.classList.contains('done'));
+    localStorage.setItem('sendai_v4',JSON.stringify({checks,babys}));
+  }catch(e){}
+  if(typeof shareConnected!=='undefined'&&shareConnected)setTimeout(pushToFirebase,400);
+}
+function loadState(){
+  try{
+    const s=localStorage.getItem('sendai_v4');if(!s)return;
+    const{checks,babys}=JSON.parse(s);
+    if(checks)_getCI().forEach((el,i)=>{if(checks[i])el.classList.add('done');});
+    if(babys)_getBI().forEach((el,i)=>{if(babys[i])el.classList.add('done');});
+  }catch(e){}
+}
+
+// ── ショップ ──
+let globalShop='r';
+const perSiteMap={};
+
+function shopUrl(idx,site){
+  const q=encodeURIComponent(SK[idx]||'ベビー用品');
+  if(site==='r')return 'https://search.rakuten.co.jp/search/mall/'+q+'/';
+  if(site==='a')return 'https://www.amazon.co.jp/s?k='+q;
+  if(site==='y')return 'https://shopping.yahoo.co.jp/search?p='+q;
+  return '#';
+}
+
+function bdIdx(id){return parseInt(id.replace('bd',''));}
+
+function renderShopGrid(id){
+  const idx=bdIdx(id);
+  const site=perSiteMap[id]||null;
+  const grid=$id('sg-'+id);if(!grid)return;
+  const sites=site==='all'?['r','a','y']:site?[site]:[globalShop];
+  const L={r:{ico:'🛒',nm:'楽天市場',sub:'ポイント◎',cls:'sb-r'},a:{ico:'📦',nm:'Amazon',sub:'配送◎',cls:'sb-a'},y:{ico:'🔶',nm:'Yahoo!',sub:'PayPay◎',cls:'sb-y'}};
+  const p=PR[idx];
+  const priceHtml=p?`<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:#666;margin-bottom:7px">💴 参考価格帯（税込・目安）</div><div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:10px;background:#fff5f7;border-radius:10px;padding:9px 12px"><span style="font-size:18px;flex-shrink:0">🏪</span><div style="flex:1"><div style="font-size:10.5px;font-weight:700;color:#c02050;margin-bottom:1px">西松屋</div><div style="font-size:14px;font-weight:800;color:#1a1a1a">${p[0]}</div></div></div><div style="display:flex;align-items:center;gap:10px;background:#eef6f4;border-radius:10px;padding:9px 12px"><span style="font-size:18px;flex-shrink:0">👶</span><div style="flex:1"><div style="font-size:10.5px;font-weight:700;color:#3d7a68;margin-bottom:1px">あかちゃん本舗</div><div style="font-size:14px;font-weight:800;color:#1a1a1a">${p[1]}</div></div></div><div style="display:flex;align-items:center;gap:10px;background:#fdf5e0;border-radius:10px;padding:9px 12px"><span style="font-size:18px;flex-shrink:0">📦</span><div style="flex:1"><div style="font-size:10.5px;font-weight:700;color:#b08030;margin-bottom:1px">ネット最安目安</div><div style="font-size:14px;font-weight:800;color:#1a1a1a">${p[2]}</div></div></div></div><div style="font-size:10px;color:#aaa;margin-top:6px">※2025年時点の目安。セール・時期により変動します</div></div>`:'';
+  grid.innerHTML=priceHtml+`<div style="display:grid;grid-template-columns:repeat(${sites.length===1?'1':sites.length===2?'2':'3'},1fr);gap:8px">`+
+    sites.map(s=>`<a class="shop-btn ${L[s].cls}" href="${shopUrl(idx,s)}" target="_blank"><span class="sb-ico">${L[s].ico}</span><span class="sb-nm">${L[s].nm}</span><span class="sb-sub">${L[s].sub}</span></a>`).join('')+'</div>';
+}
+
+function setGlobalShop(type){
+  globalShop=type;
+  ['r','a','y'].forEach(t=>{const el=$id('sg-'+t);if(el){el.classList.remove('sel-r','sel-a','sel-y');}});
+  const sel=$id('sg-'+type);if(sel)sel.classList.add('sel-'+type);
+  try{localStorage.setItem('global_shop',type);}catch(e){}
+}
+
+function setPerSite(id,site){
+  perSiteMap[id]=site;
+  const container=$id(id);if(!container)return;
+  container.querySelectorAll('.psr-btn').forEach(b=>{b.className='psr-btn';});
+  const idx2={r:0,a:1,y:2,all:3};
+  const btns=container.querySelectorAll('.psr-btn');
+  if(btns[idx2[site]])btns[idx2[site]].classList.add('sel-'+site);
+  renderShopGrid(id);
+}
+
+function toggleBd(id){
+  const el=$id(id);el.classList.toggle('open');
+  if(el.classList.contains('open')){
+    // レンタルHTML遅延生成
+    const rentalEl=$id('rental-'+id);
+    if(rentalEl&&rentalEl.innerHTML===''){
+      const notes={bd0:['長期割引あり','1,000点以上の品揃え'],bd1:['ISOFIXチャイルドシートも取扱あり','サイベックス・コンビなど人気ブランドも充実'],bd19:['ベビーバス・スケールも取扱あり','使用期間が短いアイテムこそレンタルがお得']};
+      const n=notes[id];if(n)rentalEl.innerHTML=rentalHtml(n[0],n[1]);
+    }
+    renderShopGrid(id);
+  }
+}
+
+// ── Firebase共有 ──
+let fbApp=null,fbDb=null,fbMods=null,roomCode='',shareConnected=false,photoShareEnabled=false;
+
+function toggleShareSection(id){$id(id)?.classList.toggle('open');}
+function saveFbConfig(){
+  const cfg={apiKey:$id('fb-apikey').value.trim(),authDomain:$id('fb-authdomain').value.trim(),databaseURL:$id('fb-dburl').value.trim(),projectId:$id('fb-projectid').value.trim()};
+  if(!cfg.apiKey||!cfg.databaseURL){alert('apiKey と databaseURL は必須です');return;}
+  try{localStorage.setItem('fb_config',JSON.stringify(cfg));}catch(e){}
+  $id('fb-save-result').style.display='block';
+  setTimeout(()=>{$id('ss-step2')?.classList.remove('open');$id('ss-step3')?.classList.add('open');},600);
+}
+function savePhotoSharePref(){photoShareEnabled=$id('photo-share-toggle').checked;try{localStorage.setItem('photo_share',photoShareEnabled?'1':'0');}catch(e){}}
+
+async function connectRoom(){
+  const code=$id('room-code-input').value.trim();
+  if(!code){alert('ルームコードを入力してください');return;}
+  let cfg;try{cfg=JSON.parse(localStorage.getItem('fb_config')||'null');}catch(e){cfg=null;}
+  if(!cfg||!cfg.apiKey){alert('先にSTEP 2でFirebaseの設定値を保存してください');$id('ss-step2')?.classList.add('open');return;}
+  setStatusBar('connecting','接続中...','Firebaseに接続しています');
+  try{
+    if(!fbMods){const m1=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');const m2=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');fbMods={...m1,...m2};}
+    if(!fbApp){fbApp=fbMods.initializeApp(cfg,'ninsan-'+Date.now());fbDb=fbMods.getDatabase(fbApp);}
+    roomCode=code;try{localStorage.setItem('room_code',code);}catch(e){}
+    shareConnected=true;
+    setStatusBar('connected','🟢 接続中 ルーム: '+code,'リアルタイムで夫婦に同期中');
+    const res=$id('connect-result');res.style.display='block';res.textContent='✅ 接続完了！ルーム「'+code+'」に参加しました。';
+    $id('disconnect-btn').style.display='block';$id('connect-btn').style.display='none';
+    $id('sync-log-wrap').style.display='block';
+    startSync();
+  }catch(e){setStatusBar('disconnected','接続失敗','設定値を確認してください');alert('Firebase接続に失敗しました。\nエラー：'+e.message);}
+}
+
+function startSync(){
+  const roomRef=fbMods.ref(fbDb,'rooms/'+roomCode);
+  fbMods.onValue(roomRef,snap=>{
+    const data=snap.val();if(!data)return;
+    if(data.checks)_getCI().forEach((el,i)=>{if(data.checks[i]!==undefined)el.classList.toggle('done',!!data.checks[i]);});
+    if(data.babys)_getBI().forEach((el,i)=>{if(data.babys[i]!==undefined)el.classList.toggle('done',!!data.babys[i]);});
+    updateProgress();updateBaby();
+    if(photoShareEnabled&&data.album){albumData=data.album;_lastAlbumKey='';renderAlbum();}
+    addSyncLog('📡 相手の変更を受信 ('+new Date().toLocaleTimeString('ja-JP')+')');
+  });
+  pushToFirebase();
+}
+
+function pushToFirebase(){
+  if(!shareConnected||!fbDb||!roomCode||!fbMods)return;
+  const checks=_getCI().map(i=>i.classList.contains('done'));
+  const babys=_getBI().map(i=>i.classList.contains('done'));
+  const payload={checks,babys,updated:Date.now()};
+  if(photoShareEnabled){payload.album=albumData.filter(p=>p.type!=='video').map(p=>({...p,media:p.media?compressImg(p.media):null}));}
+  fbMods.set(fbMods.ref(fbDb,'rooms/'+roomCode),payload).then(()=>addSyncLog('✅ 同期完了 ('+new Date().toLocaleTimeString('ja-JP')+')')).catch(e=>addSyncLog('⚠ 同期失敗：'+e.message));
+}
+
+function compressImg(b64){
+  if(!b64||b64.length<140000)return b64;
+  try{const img=new Image();img.src=b64;const max=600,scale=Math.min(max/(img.width||600),max/(img.height||600),1);const cv=document.createElement('canvas');cv.width=Math.round((img.width||600)*scale);cv.height=Math.round((img.height||600)*scale);cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);return cv.toDataURL('image/jpeg',0.6);}catch(e){return b64;}
+}
+
+function disconnectRoom(){
+  shareConnected=false;roomCode='';try{localStorage.removeItem('room_code');}catch(e){}
+  setStatusBar('disconnected','未接続（このiPhoneのみ）','共有するにはFirebaseを設定してください');
+  $id('connect-result').style.display='none';$id('disconnect-btn').style.display='none';$id('connect-btn').style.display='block';$id('sync-log-wrap').style.display='none';
+}
+function setStatusBar(type,text,sub){
+  const bar=$id('share-status-bar');if(!bar)return;
+  bar.className='share-status-bar '+type;$id('ssb-text').textContent=text;$id('ssb-sub').textContent=sub;
+}
+function addSyncLog(msg){const log=$id('sync-log');if(!log)return;log.textContent=msg+'\n'+log.textContent;if(log.textContent.length>600)log.textContent=log.textContent.slice(0,600);}
+
+// ── ダウンロード ──
+function openFiles(url){try{window.location.href=url;}catch(e){}}
+function saveToFile(){
+  try{
+    const html='<!DOCTYPE html>'+document.documentElement.outerHTML;
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='kinchan.html';document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+    $id('dl-result').style.display='block';
+    const btn=$id('dl-btn');btn.innerHTML='<span style="font-size:22px">✅</span> ダウンロード完了！';btn.style.cssText='width:100%;padding:15px;border:none;border-radius:14px;background:#e8f5e8;color:#2a7a2a;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px';
+    setTimeout(()=>{window.location.href='shareddocuments://';},1200);
+  }catch(e){alert('ダウンロードに失敗しました。');}
+}
+
+// ── ヘルパー ──
+function fmtDate(str){if(!str)return '';const[y,m,d]=str.split('-');return 'R'+(parseInt(y)-2018)+'.'+m+'.'+d;}
+function esc(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── Service Worker ──
+if('serviceWorker' in navigator){
+  const sw=`const C='sw-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll([location.href])));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!==C).map(n=>caches.delete(n)))));self.clients.claim();});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});`;
+  const swUrl=URL.createObjectURL(new Blob([sw],{type:'application/javascript'}));
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
+}
+
+// ── 初期化 ──
+window.addEventListener('load',()=>{
+  loadState();loadAlbumData();
+  updateProgress();updateBaby();
+  updateAlbumWeekInfo();updateGuideWeek();
+  renderGuide();
+  try{const gs=localStorage.getItem('global_shop')||'r';globalShop=gs;['r','a','y'].forEach(t=>$id('sg-'+t)?.classList.remove('sel-r','sel-a','sel-y'));$id('sg-'+gs)?.classList.add('sel-'+gs);}catch(e){}
+  try{photoShareEnabled=localStorage.getItem('photo_share')==='1';const tog=$id('photo-share-toggle');if(tog)tog.checked=photoShareEnabled;}catch(e){}
+  try{const cfg=JSON.parse(localStorage.getItem('fb_config')||'null');if(cfg){if($id('fb-apikey'))$id('fb-apikey').value=cfg.apiKey||'';if($id('fb-authdomain'))$id('fb-authdomain').value=cfg.authDomain||'';if($id('fb-dburl'))$id('fb-dburl').value=cfg.databaseURL||'';if($id('fb-projectid'))$id('fb-projectid').value=cfg.projectId||'';}}catch(e){}
+  try{const rc=localStorage.getItem('room_code')||'';if(rc&&$id('room-code-input'))$id('room-code-input').value=rc;}catch(e){}
+  setTimeout(()=>{const s=$id('splash');s.classList.add('hide');setTimeout(()=>s.remove(),600);},1600);
+});
+</script>
+</body>
+</html>
